@@ -1,0 +1,10 @@
+name: TokensSystem
+version: 1.0.0
+description: A multiple token system
+main: nu.granskogen.spela.TokenSystem.Main
+author: Bingoo
+depend: ['BossShopPro']
+api-version: 1.16
+
+commands:
+  test:
