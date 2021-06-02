@@ -7,4 +7,26 @@ depend: ['BossShopPro']
 api-version: 1.16
 
 commands:
-  test:
+  tokens:
+
+permissions:
+  TokensSystem.see.self:
+    description: Allows to see your token amount
+    default: op
+  TokensSystem.see.other:
+    description: Allows to see other players token amount
+    default: op
+  TokensSystem.add:
+    description: Allows to add tokens to users
+    default: op
+  TokensSystem.remove:
+    description: Allows to remove tokens to users
+    default: op
+  TokensSystem.*:
+    description: Wildcard permission
+    default: op
+    children:
+      TokensSystem.add: true
+      TokensSystem.remove: true
+      TokensSystem.see.other: true
+      TokensSystem.see.self: true

@@ -7,10 +7,10 @@ import org.black_ixx.bossshop.managers.misc.InputReader;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
-public class BSVoteTokenPriceType extends BSPriceTypeNumber {
+public class BSJobsTokenPriceType extends BSPriceTypeNumber {
 	Main pl = Main.getInstance();
 	
-	public BSVoteTokenPriceType() {
+	public BSJobsTokenPriceType() {
 		updateNames();
 	}
 
@@ -35,8 +35,8 @@ public class BSVoteTokenPriceType extends BSPriceTypeNumber {
     @Override
     public boolean hasPrice(Player p, BSBuy buy, Object price, ClickType clickType, int multiplier, boolean messageOnFailure) {
         double points = ClassManager.manager.getMultiplierHandler().calculatePriceWithMultiplier(p, buy, clickType, (Double) price) * multiplier;
-        if (pl.getVoteToken(p.getUniqueId()).getAmount() < points) {
-            String message = "§cDu har inte tillräckligt många VoteTokens.";
+        if (pl.getJobsToken(p.getUniqueId()).getAmount() < points) {
+            String message = "§cDu har inte tillräckligt många JobsTokens.";
             if (message != null && messageOnFailure) {
                 p.sendMessage(ClassManager.manager.getStringManager().transform(message, buy, buy.getShop(), null, p));
             }
@@ -49,14 +49,14 @@ public class BSVoteTokenPriceType extends BSPriceTypeNumber {
     public String takePrice(Player p, BSBuy buy, Object price, ClickType clickType, int multiplier) {
         double points = ClassManager.manager.getMultiplierHandler().calculatePriceWithMultiplier(p, buy, clickType, (Double) price) * multiplier;
  
-        pl.getVoteToken(p.getUniqueId()).remove((int) points);
+        pl.getJobsToken(p.getUniqueId()).remove((int) points);
         return getDisplayBalance(p, buy, price, clickType);
     }
 
     @Override
     public String getDisplayBalance(Player p, BSBuy buy, Object price, ClickType clickType) {
-    	VoteToken voteToken = pl.getVoteToken(p.getUniqueId());
-        double balance_points = voteToken.getAmount();
+    	JobsToken JobsToken = pl.getJobsToken(p.getUniqueId());
+        double balance_points = JobsToken.getAmount();
         return "" + balance_points;
     }
  
@@ -68,7 +68,7 @@ public class BSVoteTokenPriceType extends BSPriceTypeNumber {
 
     @Override
     public String[] createNames() { // the names of the PriceType users can enter in their shop configs
-        return new String[]{ "VoteToken" };
+        return new String[]{ "JobsToken" };
     }
 
     public boolean supportsMultipliers() {

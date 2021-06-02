@@ -3,7 +3,10 @@ package nu.granskogen.spela.TokenSystem;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import nu.granskogen.spela.TokenSystem.commands.TokensCommand;
 
 public class Main extends JavaPlugin {
 	
@@ -15,7 +18,10 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 		
-		getCommand("test").setExecutor(new TestCommand());
+		getCommand("tokens").setExecutor(new TokensCommand());
+		getCommand("tokens").setTabCompleter(new TokensCommand());
+		getServer().getPluginManager().registerEvents(new EventListener(), this);
+		
 	}
 	
 	public VoteToken getVoteToken(UUID uuid) {
@@ -26,6 +32,16 @@ public class Main extends JavaPlugin {
 		}
 		
 		return voteToken;
+	}
+	
+	public JobsToken getJobsToken(UUID uuid) {
+		JobsToken jobsToken = jobsTokens.get(uuid);
+		if(jobsToken == null) {
+			jobsToken = new JobsToken();
+			jobsTokens.put(uuid, jobsToken);
+		}
+		
+		return jobsToken;
 	}
 	
 	public static Main getInstance() {

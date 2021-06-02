@@ -18,6 +18,10 @@ public class PlayerTokens {
 		this.amount -= value;
 	}
 	
+	public void setAmount(int value) {
+		this.amount = value;
+	}
+	
 	
 	// Getters and setters
 	public String getName() {
