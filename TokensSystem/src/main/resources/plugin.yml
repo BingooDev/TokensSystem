@@ -4,6 +4,7 @@ description: A multiple token system
 main: nu.granskogen.spela.TokenSystem.Main
 author: Bingoo
 depend: ['BossShopPro']
+softdepend: [PlaceholderAPI]
 api-version: 1.16
 
 commands:

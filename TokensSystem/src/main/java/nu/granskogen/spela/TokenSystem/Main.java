@@ -22,6 +22,10 @@ public class Main extends JavaPlugin {
 		getCommand("tokens").setTabCompleter(new TokensCommand());
 		getServer().getPluginManager().registerEvents(new EventListener(), this);
 		
+		// Small check to make sure that PlaceholderAPI is installed
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			new TokensPAPIExpansion(Main.getInstance()).register();
+        }
 	}
 	
 	public VoteToken getVoteToken(UUID uuid) {
