@@ -1,0 +1,10 @@
+database:
+  username: ""
+  database: ""
+  password: ""
+  host: ""
+  port: ""
+  prepStmtCacheSqlLimit: "2048"
+  prepStmtCacheSize: "250"
+  connectionTimeout: 500000 
+  maximumPoolSize: 4

@@ -1,20 +1,16 @@
-package nu.granskogen.spela.TokenSystem;
+package nu.granskogen.spela.TokenSystem.events;
 
-import org.black_ixx.bossshop.events.BSRegisterTypesEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
 
-public class EventListener implements Listener {
+import nu.granskogen.spela.TokenSystem.Main;
 
-	@EventHandler
-	public void onRegisterType(BSRegisterTypesEvent event) {
-		new BSVoteTokenPriceType().register();
-		new BSJobsTokenPriceType().register();
-	}
+public class VoteListener implements Listener {
 	
 	@EventHandler
 	public void onVote(VotifierEvent event) {
@@ -22,5 +18,11 @@ public class EventListener implements Listener {
 		OfflinePlayer player = Bukkit.getOfflinePlayer(event.getVote().getUsername());
 		Main.getInstance().getVoteToken(player.getUniqueId()).add(1);
 		System.out.println("VoteToken added to " + event.getVote().getUsername());
+		
+		if(player.isOnline()) {
+			Player onlinePlayer = (Player) player;
+			onlinePlayer.sendMessage("§aDu har fått en VoteToken!");
+		}
 	}
+
 }

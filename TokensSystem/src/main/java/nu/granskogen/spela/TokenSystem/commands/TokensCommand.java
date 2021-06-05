@@ -127,6 +127,8 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 				return false;
 			}
 			
+			pl.dbm.updateUserTokens(player.getUniqueId());
+			
 			sender.sendMessage("§2" + player.getName() + "§a har fått §2" + args[3] + " " + tokens.getName()+ "s§a. Ny totalsumma: §2" + tokens.getAmount() + " " + tokens.getName() + "s§a.");
 			
 		} else if(args[1].equalsIgnoreCase("remove")) {
@@ -148,6 +150,8 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 				return false;
 			}
 			
+			pl.dbm.updateUserTokens(player.getUniqueId());
+			
 			sender.sendMessage("§2" + player.getName() + "§a har blivit av med §2" + args[3] + " " + tokens.getName() + "s§a. Ny totalsumma: §2" + tokens.getAmount() + " " + tokens.getName() + "s§a.");
 			
 		} else if(args[1].equalsIgnoreCase("set")) {
@@ -162,6 +166,8 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 				sender.sendMessage("§cOgiltig summa");
 				return false;
 			}
+			
+			pl.dbm.updateUserTokens(player.getUniqueId());
 			
 			sender.sendMessage("§2" + player.getName() + "§a har nu: §2" + tokens.getAmount() + " " + tokens.getName() + "s§a.");
 			
