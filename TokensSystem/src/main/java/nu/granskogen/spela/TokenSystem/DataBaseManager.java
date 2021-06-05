@@ -44,7 +44,7 @@ public class DataBaseManager {
 				final JobsToken jobsToken = Main.getInstance().getJobsToken(uuid);
 				final VoteToken voteToken = Main.getInstance().getVoteToken(uuid);
 				try (Connection con = DataSource.getConnection();
-						PreparedStatement pst = con.prepareStatement(SQLQuery.UPDATE_JOBS_AND_VOTE_TOKENS.toString());
+						PreparedStatement pst = con.prepareStatement(SQLQuery.UPDATE_USER.toString());
 					) {
 					pst.setString(1, uuid.toString());
 					pst.setInt(2, jobsToken.getAmount());

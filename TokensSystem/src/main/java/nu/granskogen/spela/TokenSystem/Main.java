@@ -1,5 +1,9 @@
 package nu.granskogen.spela.TokenSystem;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -49,6 +53,11 @@ public class Main extends JavaPlugin {
         }
 		
 		dbm.createDatabase();
+		
+		if(!this.loadUsers()) {
+			//Could not read from database
+			this.getPluginLoader().disablePlugin(this);
+		}
 	}
 	
 	public VoteToken getVoteToken(UUID uuid) {
@@ -73,6 +82,27 @@ public class Main extends JavaPlugin {
 	
 	public static Main getInstance() {
 		return instance;
+	}
+	
+	private boolean loadUsers() {
+		try (Connection con = DataSource.getConnection();
+				PreparedStatement pst = con.prepareStatement(SQLQuery.SELECT_ALL_USERS.toString());
+				ResultSet rs = pst.executeQuery();
+			) {
+			while (rs.next()) {
+				VoteToken vt = new VoteToken();
+				vt.setAmount(rs.getInt("vote_tokens"));
+				voteTokens.put(UUID.fromString(rs.getString("uuid")), vt);
+				
+				JobsToken jt = new JobsToken();
+				jt.setAmount(rs.getInt("jobs_tokens"));
+				jobsTokens.put(UUID.fromString(rs.getString("uuid")), jt);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 }
