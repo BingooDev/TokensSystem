@@ -14,8 +14,8 @@ public class DataBaseManager {
 			PreparedStatement pst = con.prepareStatement(SQLQuery.CREATE_TABLE_USERS.toString());
 		) {
 			pst.execute();
-			System.err.println("Created!");
 		} catch (SQLException e) {
+			System.err.println("Failed creating database table for TokensSystem!");
 			e.printStackTrace();
 		}
 	}
@@ -31,6 +31,7 @@ public class DataBaseManager {
 					pst.execute();
 				} catch (SQLException e) {
 					e.printStackTrace();
+					System.err.println("Failed inserting user in TokensSystem database!");
 				}
 				
 			}
@@ -52,6 +53,7 @@ public class DataBaseManager {
 					pst.execute();
 				} catch (SQLException e) {
 					e.printStackTrace();
+					System.err.println("Failed updating user ("+uuid.toString()+") in TokensSystem database!");
 				}
 				
 			}
