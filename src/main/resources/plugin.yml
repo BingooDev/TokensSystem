@@ -1,6 +1,6 @@
 name: TokensSystem
 version: 1.0.0
-description: A multiple token system
+description: "A multiple token system"
 main: nu.granskogen.spela.TokenSystem.Main
 author: Bingoo
 softdepend: [BossShopPro, PlaceholderAPI, Jobs, Votifier]

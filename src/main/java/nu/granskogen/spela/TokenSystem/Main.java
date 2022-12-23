@@ -34,26 +34,26 @@ public class Main extends JavaPlugin {
 		getCommand("tokens").setExecutor(new TokensCommand());
 		getCommand("tokens").setTabCompleter(new TokensCommand());
 		getServer().getPluginManager().registerEvents(new EventListener(), this);
-		
+
 		// Small check to make sure that BossShopPro is installed
 		if (Bukkit.getPluginManager().getPlugin("BossShopPro") != null) {
 			getServer().getPluginManager().registerEvents(new BSListener(), this);
         }
-		
+
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			new TokensPAPIExpansion(Main.getInstance()).register();
         }
-		
+
 		if (Bukkit.getPluginManager().getPlugin("Votifier") != null) {
 			getServer().getPluginManager().registerEvents(new VoteListener(), this);
         }
-		
+
 		if (Bukkit.getPluginManager().getPlugin("Jobs") != null) {
 			getServer().getPluginManager().registerEvents(new JobsListener(), this);
         }
-		
+
 		dbm.createDatabase();
-		
+
 		if(!this.loadUsers()) {
 			//Could not read from database
 			this.getPluginLoader().disablePlugin(this);
