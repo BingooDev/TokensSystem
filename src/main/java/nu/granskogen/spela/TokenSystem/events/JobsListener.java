@@ -19,7 +19,7 @@ public class JobsListener implements Listener {
 		
 		Player player = Bukkit.getPlayer(jobsPlayer.getUniqueId());
 		if(player != null) 
-			player.sendMessage("§aDu har fått en JobsToken!");
+			player.sendMessage("Â§aDu har fÃ¥tt en JobsToken!");
 		
 		Main.getInstance().dbm.updateUserTokens(player.getUniqueId());
 	}

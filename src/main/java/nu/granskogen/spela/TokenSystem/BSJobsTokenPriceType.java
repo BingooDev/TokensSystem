@@ -36,7 +36,7 @@ public class BSJobsTokenPriceType extends BSPriceTypeNumber {
     public boolean hasPrice(Player p, BSBuy buy, Object price, ClickType clickType, int multiplier, boolean messageOnFailure) {
         double points = ClassManager.manager.getMultiplierHandler().calculatePriceWithMultiplier(p, buy, clickType, (Double) price) * multiplier;
         if (pl.getJobsToken(p.getUniqueId()).getAmount() < points) {
-            String message = "§cDu har inte tillräckligt många JobsTokens.";
+            String message = "Â§cDu har inte tillrÃ¤ckligt mÃ¥nga JobsTokens.";
             if (message != null && messageOnFailure) {
                 p.sendMessage(ClassManager.manager.getStringManager().transform(message, buy, buy.getShop(), null, p));
             }

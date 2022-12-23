@@ -21,7 +21,7 @@ public class VoteListener implements Listener {
 		
 		if(player.isOnline()) {
 			Player onlinePlayer = (Player) player;
-			onlinePlayer.sendMessage("§aDu har fått en VoteToken!");
+			onlinePlayer.sendMessage("Â§aDu har fÃ¥tt en VoteToken!");
 		}
 		
 		Main.getInstance().dbm.updateUserTokens(player.getUniqueId());

@@ -28,7 +28,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 			Player player = (Player) sender;
 			
 			if(!sender.hasPermission("TokensSystem.see.self")) {
-				sender.sendMessage("§cÅtkomst nekad!");
+				sender.sendMessage("Â§cÃ…tkomst nekad!");
 				return false;
 			}
 			
@@ -42,17 +42,17 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 					break;
 	
 				default:
-					sender.sendMessage("§cOgiltig token typ.");
+					sender.sendMessage("Â§cOgiltig token typ.");
 					return false;
 			}
 			
-			sender.sendMessage("§aDu har §2" + tokens.getAmount() + " " + tokens.getName() + "s" + "§a.");
+			sender.sendMessage("Â§aDu har Â§2" + tokens.getAmount() + " " + tokens.getName() + "s" + "Â§a.");
 			return true;
 		}
 		
 		if(args.length == 3) {
 			if(!sender.hasPermission("TokensSystem.see.other")) {
-				sender.sendMessage("§cÅtkomst nekad!");
+				sender.sendMessage("Â§cÃ…tkomst nekad!");
 				return false;
 			}
 			
@@ -60,7 +60,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 			OfflinePlayer player = Bukkit.getOfflinePlayer(args[2]);
 			
 			if(player == null) {
-				sender.sendMessage("§cSpelaren finns inte.");
+				sender.sendMessage("Â§cSpelaren finns inte.");
 				return false;
 			}
 			
@@ -79,11 +79,11 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 					break;
 	
 				default:
-					sender.sendMessage("§cOgiltig token typ.");
+					sender.sendMessage("Â§cOgiltig token typ.");
 					return false;
 			}
 			
-			sender.sendMessage("§2" + player.getName() + "§a har §2" + tokens.getAmount() + " " + tokens.getName() + "§a.");
+			sender.sendMessage("Â§2" + player.getName() + "Â§a har Â§2" + tokens.getAmount() + " " + tokens.getName() + "Â§a.");
 			return true;
 		}
 		
@@ -96,7 +96,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 		OfflinePlayer player = Bukkit.getOfflinePlayer(args[2]);
 		
 		if(player == null) {
-			sender.sendMessage("§cSpelaren finns inte.");
+			sender.sendMessage("Â§cSpelaren finns inte.");
 			return false;
 		}
 		
@@ -110,30 +110,30 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 				break;
 
 			default:
-				sender.sendMessage("§cOgiltig token typ.");
+				sender.sendMessage("Â§cOgiltig token typ.");
 				return false;
 		}
 		
 		if(args[1].equalsIgnoreCase("add")) {
 			if(!sender.hasPermission("TokensSystem.add")) {
-				sender.sendMessage("§cÅtkomst nekad!");
+				sender.sendMessage("Â§cÃ…tkomst nekad!");
 				return false;
 			}
 			
 			try {
 				tokens.add(Integer.parseInt(args[3]));
 			} catch (NumberFormatException e) {
-				sender.sendMessage("§cOgiltig summa");
+				sender.sendMessage("Â§cOgiltig summa");
 				return false;
 			}
 			
 			pl.dbm.updateUserTokens(player.getUniqueId());
 			
-			sender.sendMessage("§2" + player.getName() + "§a har fått §2" + args[3] + " " + tokens.getName()+ "s§a. Ny totalsumma: §2" + tokens.getAmount() + " " + tokens.getName() + "s§a.");
+			sender.sendMessage("Â§2" + player.getName() + "Â§a har fÃ¥tt Â§2" + args[3] + " " + tokens.getName()+ "sÂ§a. Ny totalsumma: Â§2" + tokens.getAmount() + " " + tokens.getName() + "sÂ§a.");
 			
 		} else if(args[1].equalsIgnoreCase("remove")) {
 			if(!sender.hasPermission("TokensSystem.remove")) {
-				sender.sendMessage("§cÅtkomst nekad!");
+				sender.sendMessage("Â§cÃ…tkomst nekad!");
 				return false;
 			}
 			
@@ -141,35 +141,35 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 			try {
 				int removeAmount = Integer.parseInt(args[3]);
 				if(tokens.getAmount() - removeAmount < 0) {
-					sender.sendMessage("§cKan inte ha ett negativt antal tokens.");
+					sender.sendMessage("Â§cKan inte ha ett negativt antal tokens.");
 					return false;
 				}
 				tokens.remove(removeAmount);
 			} catch (NumberFormatException e) {
-				sender.sendMessage("§cOgiltig summa");
+				sender.sendMessage("Â§cOgiltig summa");
 				return false;
 			}
 			
 			pl.dbm.updateUserTokens(player.getUniqueId());
 			
-			sender.sendMessage("§2" + player.getName() + "§a har blivit av med §2" + args[3] + " " + tokens.getName() + "s§a. Ny totalsumma: §2" + tokens.getAmount() + " " + tokens.getName() + "s§a.");
+			sender.sendMessage("Â§2" + player.getName() + "Â§a har blivit av med Â§2" + args[3] + " " + tokens.getName() + "sÂ§a. Ny totalsumma: Â§2" + tokens.getAmount() + " " + tokens.getName() + "sÂ§a.");
 			
 		} else if(args[1].equalsIgnoreCase("set")) {
 			if(!sender.hasPermission("TokensSystem.remove")) {
-				sender.sendMessage("§cÅtkomst nekad!");
+				sender.sendMessage("Â§cÃ…tkomst nekad!");
 				return false;
 			}
 			
 			try {
 				tokens.setAmount(Integer.parseInt(args[3]));
 			} catch (NumberFormatException e) {
-				sender.sendMessage("§cOgiltig summa");
+				sender.sendMessage("Â§cOgiltig summa");
 				return false;
 			}
 			
 			pl.dbm.updateUserTokens(player.getUniqueId());
 			
-			sender.sendMessage("§2" + player.getName() + "§a har nu: §2" + tokens.getAmount() + " " + tokens.getName() + "s§a.");
+			sender.sendMessage("Â§2" + player.getName() + "Â§a har nu: Â§2" + tokens.getAmount() + " " + tokens.getName() + "sÂ§a.");
 			
 		} else {
 			sendUsageText(sender);
@@ -179,9 +179,9 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	private void sendUsageText(CommandSender sender) {
-		sender.sendMessage("§7Syntax: /tokens jobs/vote add/remove/set <player> <summa>");
-		sender.sendMessage("§7Syntax: /tokens jobs/vote amount <player>");
-		sender.sendMessage("§7Syntax: /tokens jobs/vote");
+		sender.sendMessage("Â§7Syntax: /tokens jobs/vote add/remove/set <player> <summa>");
+		sender.sendMessage("Â§7Syntax: /tokens jobs/vote amount <player>");
+		sender.sendMessage("Â§7Syntax: /tokens jobs/vote");
 	}
 	
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
