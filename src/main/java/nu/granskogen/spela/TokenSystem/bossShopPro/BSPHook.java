@@ -1,4 +1,4 @@
-package nu.granskogen.spela.TokenSystem;
+package nu.granskogen.spela.TokenSystem.bossShopPro;
 
 import org.black_ixx.bossshop.BossShop;
 import org.black_ixx.bossshop.api.BossShopAPI;

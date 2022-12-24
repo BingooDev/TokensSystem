@@ -32,12 +32,23 @@ public class BSJobsTokenPriceType extends BSPriceTypeNumber {
     }
 
 
+    /**
+     * Checks if player has enough tokens to complete the purchase.
+     * @param p
+     * @param buy
+     * @param price
+     * @param clickType
+     * @param multiplier
+     * @param messageOnFailure
+     * @return True if player has enough, false otherwise
+     */
     @Override
     public boolean hasPrice(Player p, BSBuy buy, Object price, ClickType clickType, int multiplier, boolean messageOnFailure) {
         double points = ClassManager.manager.getMultiplierHandler().calculatePriceWithMultiplier(p, buy, clickType, (Double) price) * multiplier;
         if (pl.getJobsToken(p.getUniqueId()).getAmount() < points) {
             String message = "§cDu har inte tillräckligt många JobsTokens.";
-            if (message != null && messageOnFailure) {
+            if (messageOnFailure) {
+                // Send the message to BossShopPro
                 p.sendMessage(ClassManager.manager.getStringManager().transform(message, buy, buy.getShop(), null, p));
             }
             return false;

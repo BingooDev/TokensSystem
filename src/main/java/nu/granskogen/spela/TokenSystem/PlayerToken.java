@@ -1,11 +1,11 @@
 package nu.granskogen.spela.TokenSystem;
 
-public class PlayerTokens {
+public class PlayerToken {
 	private String name;
 	private int amount = 0;
 	
 	// Constructor
-	public PlayerTokens(String name) {
+	public PlayerToken(String name) {
 		this.name = name;
 	}
 	
