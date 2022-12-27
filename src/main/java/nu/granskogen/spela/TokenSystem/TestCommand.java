@@ -19,11 +19,11 @@ public class TestCommand implements CommandExecutor {
 		VoteToken voteToken = pl.getVoteToken(player.getUniqueId());
 		
 		if(args[0].equalsIgnoreCase("add")) {
-			voteToken.add(Integer.parseInt(args[1]));
+			voteToken.addAmount(Integer.parseInt(args[1]));
 		}
 		
 		if(args[0].equalsIgnoreCase("remove")) {
-			voteToken.remove(Integer.parseInt(args[1]));
+			voteToken.removeAmount(Integer.parseInt(args[1]));
 		}
 		
 		player.sendMessage("You have " + voteToken.getAmount() + " tokens");

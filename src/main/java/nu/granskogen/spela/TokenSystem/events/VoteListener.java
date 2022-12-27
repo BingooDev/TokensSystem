@@ -16,7 +16,7 @@ public class VoteListener implements Listener {
 	public void onVote(VotifierEvent event) {
 		@SuppressWarnings("deprecation")
 		OfflinePlayer player = Bukkit.getOfflinePlayer(event.getVote().getUsername());
-		Main.getInstance().getVoteToken(player.getUniqueId()).add(1);
+		Main.getInstance().getVoteToken(player.getUniqueId()).addAmount(1);
 		System.out.println("VoteToken added to " + event.getVote().getUsername());
 		
 		if(player.isOnline()) {

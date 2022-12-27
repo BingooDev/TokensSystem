@@ -15,7 +15,7 @@ public class JobsListener implements Listener {
 	@EventHandler
 	public void onLevelUp(JobsLevelUpEvent event) {
 		JobsPlayer jobsPlayer = event.getPlayer();
-		Main.getInstance().getJobsToken(jobsPlayer.getUniqueId()).add(1);
+		Main.getInstance().getJobsToken(jobsPlayer.getUniqueId()).addAmount(1);
 		
 		Player player = Bukkit.getPlayer(jobsPlayer.getUniqueId());
 		if(player != null) 

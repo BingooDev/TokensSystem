@@ -4,8 +4,8 @@ import org.black_ixx.bossshop.events.BSRegisterTypesEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import nu.granskogen.spela.TokenSystem.BSJobsTokenPriceType;
-import nu.granskogen.spela.TokenSystem.BSVoteTokenPriceType;
+import nu.granskogen.spela.TokenSystem.bossShopPro.BSJobsTokenPriceType;
+import nu.granskogen.spela.TokenSystem.bossShopPro.BSVoteTokenPriceType;
 
 public class BSListener implements Listener {
 	

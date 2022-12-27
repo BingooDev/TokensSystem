@@ -1,6 +1,6 @@
 package nu.granskogen.spela.TokenSystem;
 
-public class JobsToken extends PlayerTokens {
+public class JobsToken extends PlayerToken {
 
 	public JobsToken() {
 		super("JobsToken");

@@ -59,6 +59,18 @@ public class Main extends JavaPlugin {
 			this.getPluginLoader().disablePlugin(this);
 		}
 	}
+
+
+
+	public PlayerToken getToken(Class<? extends PlayerToken> tokenType, UUID uuid) {
+		System.out.println(tokenType);
+		if(VoteToken.class.isAssignableFrom(tokenType)) {
+			return getVoteToken(uuid);
+		} else if(JobsToken.class.isAssignableFrom(tokenType)) {
+			return getJobsToken(uuid);
+		}
+		return null;
+	}
 	
 	public VoteToken getVoteToken(UUID uuid) {
 		VoteToken voteToken = voteTokens.get(uuid);

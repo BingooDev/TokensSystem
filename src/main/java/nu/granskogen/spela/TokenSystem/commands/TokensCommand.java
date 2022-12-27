@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Lists;
 
 import nu.granskogen.spela.TokenSystem.Main;
-import nu.granskogen.spela.TokenSystem.PlayerTokens;
+import nu.granskogen.spela.TokenSystem.PlayerToken;
 
 public class TokensCommand implements CommandExecutor, TabCompleter {
 	Main pl = Main.getInstance();
@@ -32,7 +32,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 				return false;
 			}
 			
-			PlayerTokens tokens;
+			PlayerToken tokens;
 			switch (args[0].toLowerCase()) {
 				case "jobs":
 					tokens = pl.getJobsToken(player.getUniqueId());
@@ -69,7 +69,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 				return false;
 			}
 			
-			PlayerTokens tokens;
+			PlayerToken tokens;
 			switch (args[0].toLowerCase()) {
 				case "jobs":
 					tokens = pl.getJobsToken(player.getUniqueId());
@@ -100,7 +100,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 			return false;
 		}
 		
-		PlayerTokens tokens;
+		PlayerToken tokens;
 		switch (args[0].toLowerCase()) {
 			case "jobs":
 				tokens = pl.getJobsToken(player.getUniqueId());
@@ -121,7 +121,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 			}
 			
 			try {
-				tokens.add(Integer.parseInt(args[3]));
+				tokens.addAmount(Integer.parseInt(args[3]));
 			} catch (NumberFormatException e) {
 				sender.sendMessage("§cOgiltig summa");
 				return false;
@@ -144,7 +144,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 					sender.sendMessage("§cKan inte ha ett negativt antal tokens.");
 					return false;
 				}
-				tokens.remove(removeAmount);
+				tokens.removeAmount(removeAmount);
 			} catch (NumberFormatException e) {
 				sender.sendMessage("§cOgiltig summa");
 				return false;
