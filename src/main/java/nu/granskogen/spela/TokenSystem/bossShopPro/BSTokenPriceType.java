@@ -1,23 +1,29 @@
 package nu.granskogen.spela.TokenSystem.bossShopPro;
 
 import nu.granskogen.spela.TokenSystem.Main;
+import nu.granskogen.spela.TokenSystem.MessageUtil;
+import nu.granskogen.spela.TokenSystem.exceptions.TokenTypeDoesntExist;
 import nu.granskogen.spela.TokenSystem.token.Token;
+import nu.granskogen.spela.TokenSystem.tokenType.TokenType;
 import org.black_ixx.bossshop.core.BSBuy;
 import org.black_ixx.bossshop.core.prices.BSPriceTypeNumber;
 import org.black_ixx.bossshop.managers.ClassManager;
 import org.black_ixx.bossshop.managers.misc.InputReader;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Objects;
+import java.sql.SQLException;
+import java.util.Map;
 
 public class BSTokenPriceType extends BSPriceTypeNumber {
-	private Main pl = Main.getInstance();
+	Main plugin = Main.getInstance();
 	private final String name;
-	private final Class<? extends Token> tokenType;
+	private final TokenType tokenType;
 
-	public BSTokenPriceType(String name, Class<? extends Token> tokenType) {
-		this.name = name;
+	public BSTokenPriceType(TokenType tokenType) {
+		this.name = tokenType.getName()+"Token";
 		this.tokenType = tokenType;
 		updateNames();
 	}
@@ -30,17 +36,29 @@ public class BSTokenPriceType extends BSPriceTypeNumber {
 	@Override
 	public String takePrice(Player p, BSBuy buy, Object price, ClickType clickType, int multiplier) {
 		double points = ClassManager.manager.getMultiplierHandler().calculatePriceWithMultiplier(p, buy, clickType, (Double) price) * multiplier;
-		Token tokens = pl.getToken(tokenType, p.getUniqueId());
-		tokens.removeAmount((int) points);
-		return getDisplayBalance(p, buy, price, clickType);
+		Token token = plugin.getTokenRepository().getToken(tokenType, p.getUniqueId());
+		token.removeAmount((int) points);
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				try {
+					plugin.getTokenRepository().updateToken(p.getUniqueId(), token);
+				} catch (SQLException | TokenTypeDoesntExist e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}.runTaskAsynchronously(plugin);
+
+		return String.valueOf(token.getAmount());
 	}
 
 	@Override
 	public boolean hasPrice(Player p, BSBuy buy, Object price, ClickType clickType, int multiplier, boolean messageOnFailure) {
 		double points = ClassManager.manager.getMultiplierHandler().calculatePriceWithMultiplier(p, buy, clickType, (Double) price) * multiplier;
-		Token tokens = pl.getToken(tokenType, p.getUniqueId());
-		if (tokens.getAmount() < points) {
-			String message = "§cDu har inte tillräckligt många " + tokens.getTokenType().getName() + "s.";
+		Token token = plugin.getTokenRepository().getToken(tokenType, p.getUniqueId());
+		if (token.getAmount() < points) {
+			String message = ChatColor.translateAlternateColorCodes('&', MessageUtil.getRawMessage("notEnoughTokens", Map.of("tokenType", tokenType.getDisplayName())));
 			if (messageOnFailure) {
 				// Send the message to BossShopPro
 				p.sendMessage(ClassManager.manager.getStringManager().transform(message, buy, buy.getShop(), null, p));
@@ -52,8 +70,8 @@ public class BSTokenPriceType extends BSPriceTypeNumber {
 
 	@Override
 	public String getDisplayBalance(Player p, BSBuy buy, Object price, ClickType clickType) {
-		Token tokens = pl.getToken(tokenType, p.getUniqueId());
-		return "" + tokens.getAmount();
+		Token token = plugin.getTokenRepository().getToken(tokenType, p.getUniqueId());
+		return "" + token.getAmount();
 	}
 
 	/**
@@ -99,10 +117,5 @@ public class BSTokenPriceType extends BSPriceTypeNumber {
 	public boolean mightNeedShopUpdate() {
 		// Set to true, in case placeholders have been updated.
 		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(pl, name, tokenType);
 	}
 }

@@ -10,6 +10,7 @@ The plugin supports [NuVotifier](https://www.spigotmc.org/resources/nuvotifier.1
 
 ## BossShopPro
 The plugin adds tokens as a PriceType to [BossShopPro](https://www.spigotmc.org/resources/bossshoppro-the-most-powerful-chest-gui-shop-menu-plugin.222/)
+The name of the PriceType will follow format: TokenTypeNameToken, e.g. voteToken and jobsToken
 
 ## PlaceholderAPI
 The plugin will automatically create placeholders for [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) to use.

@@ -70,7 +70,7 @@ public class Main extends JavaPlugin {
 		// Small check to make sure that BossShopPro is installed
 		if (Bukkit.getPluginManager().getPlugin("BossShopPro") != null) {
 			getLogger().info("Enabling BossShopPro support");
-			getServer().getPluginManager().registerEvents(new BSListener(), this);
+			getServer().getPluginManager().registerEvents(new BSListener(tokenTypeRepository), this);
         }
 
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {

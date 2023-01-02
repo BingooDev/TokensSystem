@@ -183,6 +183,11 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 					return;
 				}
 				MessageUtil.sendMessage(sender, "createdTokenType", Map.of("tokenType", nameLowerCase, "displayName", displayName));
+				// register BossShopPro PriceType
+				if(Bukkit.getPluginManager().getPlugin("BossShopPro") != null) {
+					MessageUtil.sendMessage(sender, "creatingBossShopProPriceType", Map.of("priceTypeName", nameLowerCase+"Token"));
+					MessageUtil.sendMessage(sender, "bossShopProTokenTypeNeedsReload");
+				}
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -205,6 +210,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 				try {
 					tokenTypeRepository.delete(tokenType);
 				} catch (SQLException e) {
+					e.printStackTrace();
 					MessageUtil.sendErrMessage(sender, "error");
 					return;
 				}

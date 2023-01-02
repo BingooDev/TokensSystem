@@ -15,6 +15,10 @@ messages:
   setTokensTarget: "<green>Dina <dark_green>{tokenType}</dark_green> sattes till <dark_green>{amount}</dark_green>."
   amountSelf: "<green>Du har <dark_green>{amount} {tokenType}</dark_green>."
   amountTarget: "<green><dark_green>{player}</dark_green> har <dark_green>{amount} {tokenType}s</dark_green>."
+  # Message is sent by BossShopPro, cant use MiniMessage
+  notEnoughTokens: "&cDu har inte tillräckligt många {tokenType}s."
+  creatingBossShopProPriceType: "<yellow>Skapar BossShopPro token typ vid namn <gold>{priceTypeName}</gold>"
+  bossShopProTokenTypeNeedsReload: "<yellow>För att aktivera BossShopPro pris typen behöver servern startas om."
 
 errors:
   accessDenied: "<red>Åtkomst nekad!"
