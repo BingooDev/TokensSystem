@@ -73,7 +73,7 @@ public class Main extends JavaPlugin {
         }
 
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-			new PAPIExpansion(Main.getInstance(), cfgm).register();
+			new PAPIExpansion(Main.getInstance(), cfgm, tokenTypeRepository, tokenRepository).register();
         }
 
 		if (Bukkit.getPluginManager().getPlugin("Votifier") != null) {

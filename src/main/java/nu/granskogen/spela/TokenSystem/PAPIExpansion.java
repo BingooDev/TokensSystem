@@ -1,24 +1,33 @@
 package nu.granskogen.spela.TokenSystem;
 
-import org.bukkit.entity.Player;
+import nu.granskogen.spela.TokenSystem.token.TokenRepository;
+import nu.granskogen.spela.TokenSystem.tokenType.TokenType;
+import nu.granskogen.spela.TokenSystem.tokenType.TokenTypeRepository;
+import org.bukkit.OfflinePlayer;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.jetbrains.annotations.NotNull;
 
 public class PAPIExpansion extends PlaceholderExpansion {
 	private Main plugin;
 	private ConfigManager cfgm;
+	private TokenTypeRepository tokenTypeRepository;
+	private TokenRepository tokenRepository;
 
     /**
 	 * Since we register the expansion inside our own plugin, we
 	 * can simply use this method here to get an instance of our
 	 * plugin.
-	 *
-	 * @param plugin The instance of our plugin.
+	 *  @param plugin The instance of our plugin.
 	 * @param cfgm ConfigManager
+	 * @param tokenTypeRepository
+	 * @param tokenRepository
 	 */
-    public PAPIExpansion(Main plugin, ConfigManager cfgm) {
+    public PAPIExpansion(Main plugin, ConfigManager cfgm, TokenTypeRepository tokenTypeRepository, TokenRepository tokenRepository) {
         this.plugin = plugin;
 		this.cfgm = cfgm;
+		this.tokenTypeRepository = tokenTypeRepository;
+		this.tokenRepository = tokenRepository;
 	}
 
     /**
@@ -85,35 +94,28 @@ public class PAPIExpansion extends PlaceholderExpansion {
     /**
      * This is the method called when a placeholder with our identifier 
      * is found and needs a value.
-     * <br>We specify the value identifier in this method.
-     * <br>Since version 2.9.1 can you use OfflinePlayers in your requests.
      *
      * @param  player
-     *         A {@link org.bukkit.entity.Player Player}.
+     *         A {@link org.bukkit.OfflinePlayer OfflinePlayer}.
      * @param  identifier
      *         A String containing the identifier/value.
      *
      * @return possibly-null String of the requested identifier.
      */
     @Override
-    public String onPlaceholderRequest(Player player, String identifier){
+    public String onRequest(OfflinePlayer player, @NotNull String identifier){
 
         if(player == null){
             return "";
         }
 
-        // %tokenssystem_votetokens%
-        if(identifier.equals("votetokens")){
-            return cfgm.getConfig().getString("votetokens", String.valueOf(plugin.getVoteToken(player.getUniqueId()).getAmount()));
-        }
+		TokenType tokenType = tokenTypeRepository.getTokenTypeByName(identifier);
+		if(tokenType == null) {
+			// We return null if an invalid placeholder (e.g. %tokenssystem_noneExistentType%) was provided
+			return null;
+		}
 
-        // %tokenssystem_jobstokens%
-        if(identifier.equals("jobstokens")){
-            return cfgm.getConfig().getString("jobstokens", String.valueOf(plugin.getJobsToken(player.getUniqueId()).getAmount()));
-        }
- 
-        // We return null if an invalid placeholder (f.e. %tokenssystem_placeholder3%) was provided
-        return null;
+		return String.valueOf(tokenRepository.getToken(tokenType, player.getUniqueId()).getAmount());
     }
 
 }
