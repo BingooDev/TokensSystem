@@ -22,6 +22,3 @@ The plugin will automatically create placeholders for [PlaceholderAPI](https://w
 2. Copy main/resources/config.yml to test/config.yml
 3. Enter database information in config.yml
 4. Run tests!
-
-## TODO:
-Create language.yml file

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import com.zaxxer.hikari.HikariDataSource;
+import nu.granskogen.spela.TokenSystem.exceptions.FailedCratingTokenType;
+import nu.granskogen.spela.TokenSystem.exceptions.TokenTypeAlreadyExists;
 import nu.granskogen.spela.TokenSystem.token.JobsToken;
 import nu.granskogen.spela.TokenSystem.token.Token;
 import nu.granskogen.spela.TokenSystem.token.TokenRepository;
@@ -60,6 +62,8 @@ public class Main extends JavaPlugin {
 			throw new RuntimeException(e);
 		}
 
+		setupDefaultTokenTypes();
+
 		getCommand("tokens").setExecutor(new TokensCommand(this, tokenTypeRepository, tokenRepository));
 		getCommand("tokens").setTabCompleter(new TokensCommand(this, tokenTypeRepository, tokenRepository));
 
@@ -84,6 +88,19 @@ public class Main extends JavaPlugin {
 //			//Could not read from database
 //			this.getPluginLoader().disablePlugin(this);
 //		}
+	}
+
+	private void setupDefaultTokenTypes() {
+		try {
+			tokenTypeRepository.createTokenType("vote", "VoteToken");
+		} catch (SQLException | FailedCratingTokenType e) {
+			e.printStackTrace();
+		} catch (TokenTypeAlreadyExists ignored) {}
+		try {
+			tokenTypeRepository.createTokenType("jobs", "JobsToken");
+		} catch (SQLException | FailedCratingTokenType e) {
+			e.printStackTrace();
+		} catch (TokenTypeAlreadyExists ignored) {}
 	}
 
 	// Used for mocking

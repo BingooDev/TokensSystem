@@ -5,6 +5,7 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.zaxxer.hikari.HikariDataSource;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import nu.granskogen.spela.TokenSystem.DataBaseUtility;
 import nu.granskogen.spela.TokenSystem.Main;
 import nu.granskogen.spela.TokenSystem.MessageUtil;
 import nu.granskogen.spela.TokenSystem.exceptions.FailedCratingTokenType;
@@ -53,6 +54,10 @@ public class ListTokensCommandTest {
 
 	@Test
 	void canCreateTokensTest() throws InterruptedException, TokenTypeAlreadyExists, SQLException, FailedCratingTokenType {
+		// Remove default TokenTypes created on plugin load
+		TestUtilities.resetDatabase(dataSource);
+		plugin.getTokenTypeRepository().loadTokenTypesFromDatabase();
+
 		plugin.getTokenTypeRepository().createTokenType("one");
 		plugin.getTokenTypeRepository().createTokenType("two");
 		PlayerMock player = server.addPlayer();
@@ -71,9 +76,14 @@ public class ListTokensCommandTest {
 	}
 
 	@Test
-	void showsMessageWhenNoTokensExist() {
+	void showsMessageWhenNoTokensExist() throws SQLException {
 		PlayerMock player = server.addPlayer();
 		player.setOp(true);
+
+		// plugin automatically creates some token types, removes these to test functionality.
+		TestUtilities.resetDatabase(dataSource);
+		plugin.getTokenTypeRepository().loadTokenTypesFromDatabase();
+
 		player.performCommand("tokens list");
 		player.assertSaid(MessageUtil.getMessage("listTokenTypes", Map.of("tokenTypesList", "<dark_green>" + plugin.cfgm.getLanguage().getString("nothing") + "</dark_green>")));
 	}

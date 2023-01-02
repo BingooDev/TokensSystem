@@ -50,6 +50,10 @@ public class DeleteTokensCommandTest {
 
 	@Test
 	void canDeleteTokensTest() throws InterruptedException, TokenTypeAlreadyExists, SQLException, FailedCratingTokenType {
+		// Remove default TokenTypes created on plugin load
+		TestUtilities.resetDatabase(dataSource);
+		plugin.getTokenTypeRepository().loadTokenTypesFromDatabase();
+
 		plugin.getTokenTypeRepository().createTokenType("one", "ONE");
 		plugin.getTokenTypeRepository().createTokenType("two", "TWO");
 

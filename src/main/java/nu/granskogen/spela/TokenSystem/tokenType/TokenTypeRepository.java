@@ -19,10 +19,11 @@ public class TokenTypeRepository {
 
 	public TokenTypeRepository(HikariDataSource dataSource) throws SQLException {
 		this.dataSource = dataSource;
-		loadTokenTypes();
+		loadTokenTypesFromDatabase();
 	}
 
-	private void loadTokenTypes() throws SQLException {
+	public void loadTokenTypesFromDatabase() throws SQLException {
+		tokenTypes.clear();
 		Connection connection = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
