@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TokenTypeRepository {
-	private HikariDataSource dataSource;
-	private HashMap<Integer, TokenType> tokenTypes = new HashMap<>();
+	private final HikariDataSource dataSource;
+	private final HashMap<Integer, TokenType> tokenTypes = new HashMap<>();
 
 	public TokenTypeRepository(HikariDataSource dataSource) throws SQLException {
 		this.dataSource = dataSource;
@@ -50,7 +50,7 @@ public class TokenTypeRepository {
 	 * Creates a new tokenType, the display name will be the same as name
 	 * @param name The name of the tokenType
 	 * @return The id of the tokenType
-	 * @throws SQLException
+	 * @throws SQLException An sql exception occurred
 	 * @see #createTokenType(String, String)
 	 */
 	public int createTokenType(String name) throws SQLException, FailedCratingTokenType, IllegalArgumentException, TokenTypeAlreadyExists {
@@ -62,7 +62,10 @@ public class TokenTypeRepository {
 	 * @param name The name of the tokenType
 	 * @param displayName The displayName of the token   
 	 * @return The id of the tokenType
-	 * @throws SQLException
+	 * @throws SQLException An sql exception occurred
+	 * @throws FailedCratingTokenType
+	 * @throws IllegalArgumentException Thrown in case of illegal name or displayName
+	 * @throws TokenTypeAlreadyExists Thrown when a token with specified name already exists
 	 */
 	public int createTokenType(String name, String displayName) throws SQLException, FailedCratingTokenType, IllegalArgumentException, TokenTypeAlreadyExists {
 		TokenType.validateName(name);
@@ -120,8 +123,8 @@ public class TokenTypeRepository {
 	/**
 	 * Updates tokenType data in database
 	 * @param tokenType The update tokenType, with same id as the old one
-	 * @throws SQLException
-	 * @throws TokenTypeAlreadyExists Thrown if the new name already exists
+	 * @throws SQLException An sql exception occurred
+	 * @throws TokenTypeAlreadyExists Thrown when a token with specified name already exists.
 	 */
 	public void updateTokenType(TokenType tokenType) throws SQLException, TokenTypeAlreadyExists {
 		TokenType.validateName(tokenType.getName());
@@ -167,7 +170,7 @@ public class TokenTypeRepository {
 	}
 
 	public List<String> getTokenTypeNames() {
-		ArrayList<String> names = new ArrayList();
+		ArrayList<String> names = new ArrayList<>();
 		tokenTypes.values().forEach(tokenType -> names.add(tokenType.getName()));
 		return names;
 	}

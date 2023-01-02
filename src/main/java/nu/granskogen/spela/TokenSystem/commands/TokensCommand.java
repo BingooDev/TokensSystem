@@ -1,12 +1,6 @@
 package nu.granskogen.spela.TokenSystem.commands;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import nu.granskogen.spela.TokenSystem.Main;
 import nu.granskogen.spela.TokenSystem.MessageUtil;
 import nu.granskogen.spela.TokenSystem.exceptions.FailedCratingTokenType;
 import nu.granskogen.spela.TokenSystem.exceptions.TokenTypeAlreadyExists;
@@ -21,16 +15,20 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-
-import nu.granskogen.spela.TokenSystem.Main;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class TokensCommand implements CommandExecutor, TabCompleter {
 
-	private Main plugin;
-	private TokenTypeRepository tokenTypeRepository;
-	private TokenRepository tokenRepository;
+	private final Main plugin;
+	private final TokenTypeRepository tokenTypeRepository;
+	private final TokenRepository tokenRepository;
 
 	public TokensCommand(Main plugin, TokenTypeRepository tokenTypeRepository, TokenRepository tokenRepository) {
 		this.plugin = plugin;
@@ -38,7 +36,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 		this.tokenRepository = tokenRepository;
 	}
 
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 		/*
 		Possible usages:
 		/tokens list
@@ -261,17 +259,10 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 				}
 
 				switch (method) {
-					case "add":
-						token.addAmount(amount);
-						break;
-					case "remove":
-						token.removeAmount(amount);
-						break;
-					case "set":
-						token.setAmount(amount);
-						break;
-					default:
-						throw new IllegalArgumentException("method must be one of: add, remove or set");
+					case "add" -> token.addAmount(amount);
+					case "remove" -> token.removeAmount(amount);
+					case "set" -> token.setAmount(amount);
+					default -> throw new IllegalArgumentException("method must be one of: add, remove or set");
 				}
 
 				try {
@@ -315,11 +306,11 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage("§7Syntax: /tokens set <tokentyp> <spelare> <summa>");
 	}
 
-	private static List<String> tab_complete_s1 = List.of("list", "create", "delete", "amount", "add", "remove", "set");
-	private static List<String> tab_complete_should_show_token_type = List.of("amount", "add", "remove", "set", "delete");
-	private static List<String> tab_complete_should_show_numbers = List.of("add", "remove", "set");
-	private static List<String> tab_complete_numbers = List.of("10", "100", "1000");
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+	private static final List<String> tab_complete_s1 = List.of("list", "create", "delete", "amount", "add", "remove", "set");
+	private static final List<String> tab_complete_should_show_token_type = List.of("amount", "add", "remove", "set", "delete");
+	private static final List<String> tab_complete_should_show_numbers = List.of("add", "remove", "set");
+	private static final List<String> tab_complete_numbers = List.of("10", "100", "1000");
+	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
 		List<String> fList = new ArrayList<>();
 		if (args.length == 1) {
 			for (String s : tab_complete_s1) {

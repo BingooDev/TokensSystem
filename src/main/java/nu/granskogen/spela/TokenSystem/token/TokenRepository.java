@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class TokenRepository {
-	private HikariDataSource dataSource;
-	private TokenTypeRepository tokenTypeRepository;
+	private final HikariDataSource dataSource;
+	private final TokenTypeRepository tokenTypeRepository;
 
 	// <token_type_id, <player_uuid, token>>
-	private HashMap<Integer, HashMap<UUID, Token>> tokens = new HashMap<>();
+	private final HashMap<Integer, HashMap<UUID, Token>> tokens = new HashMap<>();
 
 	public TokenRepository(HikariDataSource dataSource, TokenTypeRepository tokenTypeRepository) throws SQLException {
 		this.dataSource = dataSource;
