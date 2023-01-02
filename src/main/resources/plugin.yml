@@ -20,10 +20,10 @@ permissions:
   TokensSystem.list:
     description: Allows access to list token types
     default: op
-  TokensSystem.see.self:
+  TokensSystem.amount.self:
     description: Allows to see your token amount
     default: true
-  TokensSystem.see.other:
+  TokensSystem.amount.other:
     description: Allows to see other players token amount
     default: op
   TokensSystem.add:
@@ -38,8 +38,8 @@ permissions:
     children:
       TokensSystem.add: true
       TokensSystem.remove: true
-      TokensSystem.see.other: true
-      TokensSystem.see.self: true
+      TokensSystem.amount.other: true
+      TokensSystem.amount.self: true
       TokensSystem.create: true
       TokensSystem.delete: true
       TokensSystem.list: true

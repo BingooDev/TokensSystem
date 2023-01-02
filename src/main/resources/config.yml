@@ -1,3 +1,6 @@
+enableJobsToken: true
+enableVoteToken: true
+
 database:
   username: ""
   database: ""

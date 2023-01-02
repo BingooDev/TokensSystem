@@ -76,12 +76,12 @@ public class Main extends JavaPlugin {
 			new PAPIExpansion(Main.getInstance(), cfgm, tokenTypeRepository, tokenRepository).register();
         }
 
-		if (Bukkit.getPluginManager().getPlugin("Votifier") != null) {
+		if (Bukkit.getPluginManager().getPlugin("Votifier") != null && cfgm.getConfig().getBoolean("enableVoteToken")) {
 			getServer().getPluginManager().registerEvents(new VoteListener(), this);
         }
 
-		if (Bukkit.getPluginManager().getPlugin("Jobs") != null) {
-			getServer().getPluginManager().registerEvents(new JobsListener(), this);
+		if (Bukkit.getPluginManager().getPlugin("Jobs") != null && cfgm.getConfig().getBoolean("enableJobsToken")) {
+			getServer().getPluginManager().registerEvents(new JobsListener(tokenTypeRepository.getTokenTypeByName("jobs"), tokenRepository, this), this);
         }
 
 //		if(!this.loadUsers()) {
