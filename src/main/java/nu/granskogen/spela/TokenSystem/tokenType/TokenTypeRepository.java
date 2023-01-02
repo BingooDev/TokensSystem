@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,7 +34,8 @@ public class TokenTypeRepository {
 				int id = rs.getInt("id");
 				tokenTypes.put(id, new TokenType(
 						id,
-					rs.getString("name")
+					rs.getString("name"),
+					rs.getString("display_name")
 				));
 			}
 			connection.close();
@@ -45,16 +47,29 @@ public class TokenTypeRepository {
 	}
 
 	/**
-	 * Creates a new tokenType
+	 * Creates a new tokenType, the display name will be the same as name
 	 * @param name The name of the tokenType
 	 * @return The id of the tokenType
 	 * @throws SQLException
+	 * @see #createTokenType(String, String)
 	 */
 	public int createTokenType(String name) throws SQLException, FailedCratingTokenType, IllegalArgumentException, TokenTypeAlreadyExists {
+		return createTokenType(name.toLowerCase(), name.toLowerCase());
+	}
+
+	/**
+	 * Creates a new tokenType
+	 * @param name The name of the tokenType
+	 * @param displayName The displayName of the token   
+	 * @return The id of the tokenType
+	 * @throws SQLException
+	 */
+	public int createTokenType(String name, String displayName) throws SQLException, FailedCratingTokenType, IllegalArgumentException, TokenTypeAlreadyExists {
 		TokenType.validateName(name);
+		TokenType.validateDisplayName(displayName);
 
 		name = name.toLowerCase();
-		String query = "INSERT INTO token_types (name) VALUES (?);";
+		String query = "INSERT INTO token_types (name, display_name) VALUES (?, ?);";
 		Connection connection = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -62,6 +77,7 @@ public class TokenTypeRepository {
 			connection = dataSource.getConnection();
 			pst = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 			pst.setString(1, name);
+			pst.setString(2, displayName);
 			pst.executeUpdate();
 
 			rs = pst.getGeneratedKeys();
@@ -70,7 +86,7 @@ public class TokenTypeRepository {
 				int id = rs.getInt(1);
 
 				// Add to memory
-				tokenTypes.put(id, new TokenType(id, name));
+				tokenTypes.put(id, new TokenType(id, name, displayName));
 
 				connection.close();
 				return id;
@@ -113,12 +129,13 @@ public class TokenTypeRepository {
 		Connection connection = null;
 		PreparedStatement pst = null;
 		try {
-			String query = "UPDATE token_types SET name=? WHERE id=?;";
+			String query = "UPDATE token_types SET name=?, display_name=? WHERE id=?;";
 			connection = dataSource.getConnection();
 
 			pst = connection.prepareStatement(query);
 			pst.setString(1, tokenType.getName());
-			pst.setInt(2, tokenType.getId());
+			pst.setString(2, tokenType.getDisplayName());
+			pst.setInt(3, tokenType.getId());
 
 			pst.executeUpdate();
 		} catch (SQLException e) {
@@ -155,6 +172,9 @@ public class TokenTypeRepository {
 		return names;
 	}
 
+	public Collection<TokenType> getTokenTypes() {
+		return tokenTypes.values();
+	}
 
 	public boolean exists(int id) {
 		return tokenTypes.get(id) != null;

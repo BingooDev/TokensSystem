@@ -32,7 +32,7 @@ public class TokenTypeRepositoryTest {
 
 	@Test
 	void canCreateTokenTypeTest() {
-		assertDoesNotThrow(() -> tokenTypeRepository.createTokenType("aName"));
+		assertDoesNotThrow(() -> tokenTypeRepository.createTokenType("aName", "a name"));
 	}
 
 	@Test
@@ -41,6 +41,9 @@ public class TokenTypeRepositoryTest {
 			tokenTypeRepository.createTokenType("aName");
 			tokenTypeRepository.createTokenType("aName");
 		});
+		assertThrows(TokenTypeAlreadyExists.class, () -> {
+			tokenTypeRepository.createTokenType("aName", "a name");
+		});
 	}
 
 	@Test
@@ -48,16 +51,24 @@ public class TokenTypeRepositoryTest {
 		int id = tokenTypeRepository.createTokenType("aName");
 		TokenType tokenType = tokenTypeRepository.getTokenTypeById(id);
 
-		assertEquals(tokenType, new TokenType(1, "aName"));
+		assertEquals(tokenType, new TokenType(id, "aName"));
+
+		int id2 = tokenTypeRepository.createTokenType("aName2", "a name 2");
+		TokenType tokenType2 = tokenTypeRepository.getTokenTypeById(id2);
+
+		assertEquals(tokenType2, new TokenType(id2, "aName2", "a name 2"));
 	}
 
 	@Test
 	void canGetTokenTypeByName() throws SQLException, FailedCratingTokenType, TokenTypeAlreadyExists {
-		tokenTypeRepository.createTokenType("something");
-		TokenType tokenType = tokenTypeRepository.getTokenTypeByName("something");
+		int id1 = tokenTypeRepository.createTokenType("something");
+		int id2 = tokenTypeRepository.createTokenType("something2", "Something 2");
+		TokenType tokenType1 = tokenTypeRepository.getTokenTypeByName("something");
+		TokenType tokenType2 = tokenTypeRepository.getTokenTypeByName("something2");
 
-		assertEquals(tokenType, new TokenType(1, "something"));
-		assertEquals(tokenType, new TokenType(1, "Something"));
+		assertEquals(tokenType1, new TokenType(id1, "something"));
+		assertEquals(tokenType1, new TokenType(id1, "SOMETHING"));
+		assertEquals(tokenType2, new TokenType(id2, "something2", "Something 2"));
 	}
 
 	@Test
@@ -71,15 +82,26 @@ public class TokenTypeRepositoryTest {
 	}
 
 	@Test
+	void tokenTypeDisplayNameCantIncludeIllegalCharacters() {
+		assertThrows(IllegalArgumentException.class, () -> tokenTypeRepository.createTokenType("valid", "a name§"));
+		System.out.println(tokenTypeRepository.getTokenTypeByName("valid"));
+		assertNull(tokenTypeRepository.getTokenTypeByName("valid"));
+		// check not throwing TokenTypeAlreadyExists
+		assertDoesNotThrow(() -> tokenTypeRepository.createTokenType("valid"));
+
+		assertThrows(IllegalArgumentException.class, () -> tokenTypeRepository.createTokenType("valid", "nam%e"));
+	}
+
+	@Test
 	void canLoadTokenTypesFromDatabase() throws SQLException, FailedCratingTokenType, TokenTypeAlreadyExists {
 		// create tokenTypes
 		tokenTypeRepository.createTokenType("one");
-		tokenTypeRepository.createTokenType("two");
+		tokenTypeRepository.createTokenType("two", "TWO TWO");
 
 		// create new repository, should load from databasen when constructed
 		tokenTypeRepository = new TokenTypeRepository(dataSource);
 		assertEquals(new TokenType(1, "one"), tokenTypeRepository.getTokenTypeByName("one"));
-		assertEquals(new TokenType(2, "two"), tokenTypeRepository.getTokenTypeByName("two"));
+		assertEquals(new TokenType(2, "two", "TWO TWO"), tokenTypeRepository.getTokenTypeByName("two"));
 	}
 
 	@Test
@@ -89,12 +111,24 @@ public class TokenTypeRepositoryTest {
 		tokenType.setName("new");
 		assertDoesNotThrow(() -> {
 			tokenTypeRepository.updateTokenType(tokenType);
-			assertEquals(new TokenType(1, "new"), tokenTypeRepository.getTokenTypeById(tokenType.getId()));
 		});
+		assertEquals(new TokenType(1, "new", "one"), tokenTypeRepository.getTokenTypeById(tokenType.getId()));
 
 		// check updated after reload from database
 		tokenTypeRepository = new TokenTypeRepository(dataSource);
-		assertEquals(new TokenType(1, "new"), tokenTypeRepository.getTokenTypeById(tokenType.getId()));
+		assertEquals(new TokenType(1, "new", "one"), tokenTypeRepository.getTokenTypeById(tokenType.getId()));
+
+		// check update of name and display name
+		tokenType.setName("new2");
+		tokenType.setDisplayName("a new display name");
+		assertDoesNotThrow(() -> {
+			tokenTypeRepository.updateTokenType(tokenType);
+		});
+		assertEquals(new TokenType(1, "new2", "a new display name"), tokenTypeRepository.getTokenTypeById(tokenType.getId()));
+
+		// check updated after reload from database
+		tokenTypeRepository = new TokenTypeRepository(dataSource);
+		assertEquals(new TokenType(1, "new2", "a new display name"), tokenTypeRepository.getTokenTypeById(tokenType.getId()));
 	}
 
 	@Test

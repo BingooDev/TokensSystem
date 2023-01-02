@@ -84,7 +84,7 @@ public class AddAndRemoveAndSetTokensCommandTest {
 	// Should create token if player has no tokens of specified type
 	void canCreateTokensTest(String cmd, int change, int newAmount) throws InterruptedException {
 		// Creating token type, same as /tokens create something
-		TokenType tokenType = createTokenType("something");
+		TokenType tokenType = createTokenType("something", "SomeThing");
 
 		PlayerMock player = server.addPlayer("Bingoo");
 		player.setOp(true);
@@ -95,12 +95,12 @@ public class AddAndRemoveAndSetTokensCommandTest {
 		assertEquals(new Token(tokenType, newAmount), plugin.getTokenRepository().getToken(tokenType, player.getUniqueId()));
 		player.assertSaid(MessageUtil.getMessage(cmd+"Tokens", Map.of(
 				"player", "Bingoo",
-				"tokenType", "something",
+				"tokenType", tokenType.getDisplayName(),
 				"amount", ""+change,
 				"sum", ""+newAmount)
 		));
 		player.assertSaid(MessageUtil.getMessage(cmd+"TokensTarget", Map.of(
-				"tokenType", "something",
+				"tokenType", tokenType.getDisplayName(),
 				"amount", ""+change,
 				"sum", ""+newAmount)
 		));
@@ -123,7 +123,7 @@ public class AddAndRemoveAndSetTokensCommandTest {
 	}
 
 	void canAddOrRemoveTokensToOfflinePlayers(String cmd, int change, int newAmount) throws InterruptedException {
-		TokenType tokenType = createTokenType("something");
+		TokenType tokenType = createTokenType("something", "SomeThing");
 
 		PlayerMock player = server.addPlayer("Bingoo");
 		player.setOp(true);
@@ -140,7 +140,7 @@ public class AddAndRemoveAndSetTokensCommandTest {
 	@Test
 	void canUpdateTokenThroughAddTest() throws InterruptedException {
 		// Creating token type, same as /tokens create something
-		TokenType tokenType = createTokenType("something");
+		TokenType tokenType = createTokenType("something", "SomeThing");
 
 		PlayerMock player = server.addPlayer("Bingoo");
 		player.setOp(true);
@@ -164,7 +164,7 @@ public class AddAndRemoveAndSetTokensCommandTest {
 	@Test
 	void canUpdateTokenThroughRemoveTest() throws InterruptedException {
 		// Creating token type, same as /tokens create something
-		TokenType tokenType = createTokenType("something");
+		TokenType tokenType = createTokenType("something", "SomeThing");
 
 		PlayerMock player = server.addPlayer("Bingoo");
 		player.setOp(true);
@@ -188,7 +188,7 @@ public class AddAndRemoveAndSetTokensCommandTest {
 	@Test
 	void canUpdateTokenThroughSetTest() throws InterruptedException {
 		// Creating token type, same as /tokens create something
-		TokenType tokenType = createTokenType("something");
+		TokenType tokenType = createTokenType("something", "SomeThing");
 
 		PlayerMock player = server.addPlayer("Bingoo");
 		player.setOp(true);
@@ -264,11 +264,11 @@ public class AddAndRemoveAndSetTokensCommandTest {
 		player.assertNoMoreSaid();
 	}
 
-	private TokenType createTokenType(String name) {
+	private TokenType createTokenType(String name, String displayName) {
 		// Creating token type, same as /tokens create something
 		TokenType tokenType = null;
 		try {
-			int id = tokenTypeRepository.createTokenType(name);
+			int id = tokenTypeRepository.createTokenType(name, displayName);
 			tokenType = tokenTypeRepository.getTokenTypeById(id);
 		} catch (SQLException | FailedCratingTokenType | TokenTypeAlreadyExists ignored) {}
 		return tokenType;

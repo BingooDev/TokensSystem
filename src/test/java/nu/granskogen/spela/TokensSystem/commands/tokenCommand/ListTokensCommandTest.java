@@ -4,6 +4,7 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.zaxxer.hikari.HikariDataSource;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import nu.granskogen.spela.TokenSystem.Main;
 import nu.granskogen.spela.TokenSystem.MessageUtil;
 import nu.granskogen.spela.TokenSystem.exceptions.FailedCratingTokenType;
@@ -19,6 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -57,13 +59,22 @@ public class ListTokensCommandTest {
 		player.setOp(true);
 		player.performCommand("tokens list");
 		player.assertSaid(MessageUtil.getMessage("listTokenTypes",
-				Map.of("tokenTypesList", MessageUtil.addCommasAndAnds(List.of("one", "two"), "dark_green"))));
+				Map.of("tokenTypesList", MessageUtil.addCommasAndAnds(List.of("one (one)", "two (two)"), "dark_green"))));
 		player.assertNoMoreSaid();
 
-		plugin.getTokenTypeRepository().createTokenType("three");
+		plugin.getTokenTypeRepository().createTokenType("three", "ThreeToken");
 		player.performCommand("tokens list");
+
 		player.assertSaid(MessageUtil.getMessage("listTokenTypes",
-				Map.of("tokenTypesList", MessageUtil.addCommasAndAnds(List.of("one", "two", "three"), "dark_green"))));
+				Map.of("tokenTypesList", MessageUtil.addCommasAndAnds(List.of("one (one)", "two (two)", "three (ThreeToken)"), "dark_green"))));
 		player.assertNoMoreSaid();
+	}
+
+	@Test
+	void showsMessageWhenNoTokensExist() {
+		PlayerMock player = server.addPlayer();
+		player.setOp(true);
+		player.performCommand("tokens list");
+		player.assertSaid(MessageUtil.getMessage("listTokenTypes", Map.of("tokenTypesList", "<dark_green>" + plugin.cfgm.getLanguage().getString("nothing") + "</dark_green>")));
 	}
 }

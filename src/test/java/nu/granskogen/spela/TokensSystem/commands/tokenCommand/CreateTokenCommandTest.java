@@ -54,7 +54,20 @@ public class CreateTokenCommandTest {
 		// Sleeping because command is performed async
 		Thread.sleep(500);
 		assertNotNull(plugin.getTokenTypeRepository().getTokenTypeByName("abc"));
-		player.assertSaid(MessageUtil.getMessage("createdTokenType", Map.of("tokenType", "abc")));
+		player.assertSaid(MessageUtil.getMessage("createdTokenType", Map.of("tokenType", "abc", "displayName", "abc")));
+		player.assertNoMoreSaid();
+	}
+
+	@Test
+	void canCreateTokenWithDisplayNameTest() throws InterruptedException {
+		PlayerMock player = server.addPlayer();
+		player.setOp(true);
+		player.performCommand("tokens create abc AbcToken");
+
+		// Sleeping because command is performed async
+		Thread.sleep(500);
+		assertNotNull(plugin.getTokenTypeRepository().getTokenTypeByName("abc"));
+		player.assertSaid(MessageUtil.getMessage("createdTokenType", Map.of("tokenType", "abc", "displayName", "AbcToken")));
 		player.assertNoMoreSaid();
 	}
 
@@ -67,9 +80,16 @@ public class CreateTokenCommandTest {
 		// Sleeping because command is performed async
 		Thread.sleep(500);
 		assertNotNull(plugin.getTokenTypeRepository().getTokenTypeByName("abc"));
-		player.assertSaid(MessageUtil.getMessage("createdTokenType", Map.of("tokenType", "abc")));
+		player.assertSaid(MessageUtil.getMessage("createdTokenType", Map.of("tokenType", "abc", "displayName", "abc")));
 
-		player.performCommand("tokens create abc");
+		player.performCommand("tokens create ABC");
+		// Sleeping because command is performed async
+		Thread.sleep(500);
+		player.assertSaid(MessageUtil.getErrMessage("tokenTypeExists", Map.of("tokenType", "abc")));
+		player.assertNoMoreSaid();
+
+		// Testing with display name
+		player.performCommand("tokens create abc NEW");
 		// Sleeping because command is performed async
 		Thread.sleep(500);
 		player.assertSaid(MessageUtil.getErrMessage("tokenTypeExists", Map.of("tokenType", "abc")));
@@ -85,6 +105,15 @@ public class CreateTokenCommandTest {
 		// Sleeping because command is performed async
 		Thread.sleep(500);
 		assertNull(plugin.getTokenTypeRepository().getTokenTypeByName("abc$"));
+		player.assertSaid(MessageUtil.getErrMessage("tokenTypeIllegalCharacters"));
+		player.assertNoMoreSaid();
+
+		// Testing display name
+		player.performCommand("tokens create abc A%BC");
+
+		// Sleeping because command is performed async
+		Thread.sleep(500);
+		assertNull(plugin.getTokenTypeRepository().getTokenTypeByName("abc"));
 		player.assertSaid(MessageUtil.getErrMessage("tokenTypeIllegalCharacters"));
 		player.assertNoMoreSaid();
 	}

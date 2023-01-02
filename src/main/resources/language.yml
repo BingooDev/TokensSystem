@@ -1,9 +1,10 @@
 and: "och"
 or: "eller"
+nothing: "inga"
 
 messages:
   tokensLeft: "<green><dark_green>{player}</dark_green> har <dark_green>{amount} {tokenType}s</dark_green> kvar."
-  createdTokenType: "<green>Du skapade token typen <dark_green>{tokenType}</dark_green>."
+  createdTokenType: "<green>Du skapade token typen <dark_green>{tokenType}</dark_green>, med visningsnamn: <dark_green>{displayName}</dark_green>."
   listTokenTypes: "<green>Följande token typer finns: {tokenTypesList}."
   deletedTokenType: "<green>Token typen <darK_green>{tokenType}</dark_green> har raderats."
   addTokens: "<green><dark_green>{player}s {tokenType}s</dark_green> ökades med <dark_green>{amount}</dark_green> ny summa: <dark_green>{sum} {tokenType}</dark_green>."
@@ -21,5 +22,6 @@ errors:
   tokenTypeExists: "<red>TokenTypen <dark_red>{tokenType}</dark_red> finns redan."
   tokenTypeDoesntExist: "<red>TokenTypen <dark_red>{tokenType}</dark_red> finns inte."
   tokenTypeIllegalCharacters: "<red>Namnet får endast innehålla a-z, 0-9, _ och -"
+  tokenTypeDisplayNameIllegalCharacters: "<red>Namnet får endast innehålla a-z, 0-9, _, - och mellanslag"
   invalidAmount: "<red>Du angav en ogiltig summa. Endast siffror är tillåtna."
   onlyPlayers: "<red>Du behöver vara en spelare för att använda detta kommando."

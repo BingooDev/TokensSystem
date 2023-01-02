@@ -130,8 +130,11 @@ public class MessageUtil {
 	public static String addCommasAndAnds(List<String> words, String color) {
 		if(words.size() == 0)
 			return "";
-		if(words.size() == 1)
-			return words.get(0);
+		if(words.size() == 1) {
+			if(color == null)
+				return words.get(0);
+			return "<"+color+">"+words.get(0)+"</"+color+">";
+		}
 
 		StringBuilder formattedString = new StringBuilder();
 		int numOfTokens = words.size();

@@ -79,7 +79,7 @@ public class AmountTokenCommandTest {
 
 	@Test
 	void canGetAmountSelf() throws TokenTypeDoesntExist, SQLException {
-		TokenType tokenType = createTokenType("something");
+		TokenType tokenType = createTokenType("something", "SomeThing");
 
 		PlayerMock player = server.addPlayer();
 		player.setOp(true);
@@ -87,13 +87,13 @@ public class AmountTokenCommandTest {
 		plugin.getTokenRepository().updateToken(player.getUniqueId(), new Token(tokenType, 42));
 
 		player.performCommand("tokens amount " + tokenType.getName());
-		player.assertSaid(MessageUtil.getMessage("amountSelf", Map.of("amount", "42", "tokenType", tokenType.getName())));
+		player.assertSaid(MessageUtil.getMessage("amountSelf", Map.of("amount", "42", "tokenType", tokenType.getDisplayName())));
 		player.assertNoMoreSaid();
 	}
 
 	@Test
 	void canGetAmountTarget() throws TokenTypeDoesntExist, SQLException {
-		TokenType tokenType = createTokenType("something");
+		TokenType tokenType = createTokenType("something", "SomeThing");
 
 		PlayerMock player = server.addPlayer();
 		player.setOp(true);
@@ -102,7 +102,7 @@ public class AmountTokenCommandTest {
 		plugin.getTokenRepository().updateToken(offlinePlayer.getUniqueId(), new Token(tokenType, 42));
 
 		player.performCommand("tokens amount " + tokenType.getName() + " " + offlinePlayer.getName());
-		player.assertSaid(MessageUtil.getMessage("amountTarget", Map.of("player", offlinePlayer.getName(), "amount", "42", "tokenType", tokenType.getName())));
+		player.assertSaid(MessageUtil.getMessage("amountTarget", Map.of("player", offlinePlayer.getName(), "amount", "42", "tokenType", tokenType.getDisplayName())));
 		player.assertNoMoreSaid();
 
 		// check console can get target amount
@@ -112,14 +112,14 @@ public class AmountTokenCommandTest {
 		String actualPlainText = PlainTextComponentSerializer.plainText().serialize(consoleSender.nextComponentMessage());
 		String expectedPlainText = PlainTextComponentSerializer.plainText().serialize(
 				MessageUtil.getMessage("amountTarget",
-						Map.of("player", offlinePlayer.getName(), "amount", "42", "tokenType", tokenType.getName())));
+						Map.of("player", offlinePlayer.getName(), "amount", "42", "tokenType", tokenType.getDisplayName())));
 		assertEquals(expectedPlainText, actualPlainText);
 		consoleSender.assertNoMoreSaid();
 	}
 
 	@Test
 	void consoleCantRunAmountSelf() {
-		TokenType tokenType = createTokenType("something");
+		TokenType tokenType = createTokenType("something", "SomeThing");
 		ConsoleCommandSenderMock consoleSender = server.getConsoleSender();
 		server.execute("tokens", consoleSender, "amount", tokenType.getName());
 		consoleSender.assertSaid(MessageUtil.getErrMessage("onlyPlayers"));
@@ -128,7 +128,7 @@ public class AmountTokenCommandTest {
 
 	@Test
 	void canGetAmountTokenTypeCaseIgnore() throws TokenTypeDoesntExist, SQLException {
-		TokenType tokenType = createTokenType("something");
+		TokenType tokenType = createTokenType("something", "SomeThing");
 
 		PlayerMock player = server.addPlayer();
 		player.setOp(true);
@@ -137,15 +137,15 @@ public class AmountTokenCommandTest {
 		plugin.getTokenRepository().updateToken(offlinePlayer.getUniqueId(), new Token(tokenType, 42));
 
 		player.performCommand("tokens amount " + tokenType.getName().toUpperCase() + " " + offlinePlayer.getName());
-		player.assertSaid(MessageUtil.getMessage("amountTarget", Map.of("player", offlinePlayer.getName(), "amount", "42", "tokenType", tokenType.getName())));
+		player.assertSaid(MessageUtil.getMessage("amountTarget", Map.of("player", offlinePlayer.getName(), "amount", "42", "tokenType", tokenType.getDisplayName())));
 		player.assertNoMoreSaid();
 	}
 
-	private TokenType createTokenType(String name) {
+	private TokenType createTokenType(String name, String displayName) {
 		// Creating token type, same as /tokens create something
 		TokenType tokenType = null;
 		try {
-			int id = tokenTypeRepository.createTokenType(name);
+			int id = tokenTypeRepository.createTokenType(name, displayName);
 			tokenType = tokenTypeRepository.getTokenTypeById(id);
 		} catch (SQLException | FailedCratingTokenType | TokenTypeAlreadyExists ignored) {}
 		return tokenType;

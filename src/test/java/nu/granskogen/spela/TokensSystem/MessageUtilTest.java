@@ -88,5 +88,9 @@ public class MessageUtilTest {
 		String expected = "<dark_green>a</dark_green>, <dark_green>b</dark_green>, <dark_green>c</dark_green> "+ plugin.cfgm.getLanguage().getString("and")+" <dark_green>something</dark_green>";
 		String actual = MessageUtil.addCommasAndAnds(List.of("a","b","c","something"), "dark_green");
 		assertEquals(expected, actual);
+
+		String expected2 = "<dark_green>a</dark_green>";
+		String actual2 = MessageUtil.addCommasAndAnds(List.of("a"), "dark_green");
+		assertEquals(expected2, actual2);
 	}
 }

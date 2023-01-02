@@ -50,8 +50,8 @@ public class DeleteTokensCommandTest {
 
 	@Test
 	void canDeleteTokensTest() throws InterruptedException, TokenTypeAlreadyExists, SQLException, FailedCratingTokenType {
-		plugin.getTokenTypeRepository().createTokenType("one");
-		plugin.getTokenTypeRepository().createTokenType("two");
+		plugin.getTokenTypeRepository().createTokenType("one", "ONE");
+		plugin.getTokenTypeRepository().createTokenType("two", "TWO");
 
 		PlayerMock player = server.addPlayer();
 		player.setOp(true);
@@ -60,19 +60,19 @@ public class DeleteTokensCommandTest {
 		// Sleeping because command is performed async
 		Thread.sleep(500);
 		assertNull(plugin.getTokenTypeRepository().getTokenTypeByName("one"));
-		player.assertSaid(MessageUtil.getMessage("deletedTokenType", Map.of("tokenType", "one")));
+		player.assertSaid(MessageUtil.getMessage("deletedTokenType", Map.of("tokenType", "ONE")));
 		player.assertNoMoreSaid();
 
 		// Assert removed from list when deleted
 		player.performCommand("tokens list");
 		player.assertSaid(MessageUtil.getMessage("listTokenTypes",
-				Map.of("tokenTypesList", MessageUtil.addCommasAndAnds(List.of("two"), "dark_green"))));
+				Map.of("tokenTypesList", MessageUtil.addCommasAndAnds(List.of("two (TWO)"), "dark_green"))));
 
 		// Check one deleted from list when adding something new
 		plugin.getTokenTypeRepository().createTokenType("three");
 		player.performCommand("tokens list");
 		player.assertSaid(MessageUtil.getMessage("listTokenTypes",
-				Map.of("tokenTypesList", MessageUtil.addCommasAndAnds(List.of("two", "three"), "dark_green"))));
+				Map.of("tokenTypesList", MessageUtil.addCommasAndAnds(List.of("two (TWO)", "three (three)"), "dark_green"))));
 		player.assertNoMoreSaid();
 	}
 

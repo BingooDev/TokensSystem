@@ -34,9 +34,9 @@ public class TokenCommandTest {
 		player.setOp(true);
 		player.performCommand("tokens");
 		player.assertSaid("§7Syntax: /tokens list");
-		player.assertSaid("§7Syntax: /tokens create <namn>");
+		player.assertSaid("§7Syntax: /tokens create <namn> [visningsnamn]");
 		player.assertSaid("§7Syntax: /tokens delete <namn>");
-		player.assertSaid("§7Syntax: /tokens amount <tokentyp> <spelare>");
+		player.assertSaid("§7Syntax: /tokens amount <tokentyp> [spelare]");
 		player.assertSaid("§7Syntax: /tokens add <tokentyp> <spelare> <summa>");
 		player.assertSaid("§7Syntax: /tokens remove <tokentyp> <spelare> <summa>");
 		player.assertSaid("§7Syntax: /tokens set <tokentyp> <spelare> <summa>");

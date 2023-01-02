@@ -4,7 +4,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import nu.granskogen.spela.TokenSystem.MessageUtil;
 import nu.granskogen.spela.TokenSystem.exceptions.FailedCratingTokenType;
 import nu.granskogen.spela.TokenSystem.exceptions.TokenTypeAlreadyExists;
@@ -40,7 +42,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 		/*
 		Possible usages:
 		/tokens list
-		/tokens create <name>
+		/tokens create <name> [displayName]
 		/tokens delete <name>
 		/tokens amount <tokentype> [player]
 		/tokens add <tokentype> <player> <amount>
@@ -72,15 +74,20 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 			}
 		}
 
-		if(args.length >= 3 && args[0].equalsIgnoreCase("amount")) {
-			runAmountCommand(sender, args[1], args[2]);
-			return true;
+		if(args.length >= 3) {
+			if(args[0].equalsIgnoreCase("amount")) {
+				runAmountCommand(sender, args[1], args[2]);
+				return true;
+			} else if(args[0].equalsIgnoreCase("create")) {
+				runCreateCommand(sender, args[1], args[2]);
+				return true;
+			}
 		}
 
 		if(args.length >= 2) {
 			switch (args[0].toLowerCase()) {
 				case "create":
-					runCreateCommand(sender, args[1]);
+					runCreateCommand(sender, args[1], args[1]);
 					return true;
 				case "delete":
 					runDeleteCommand(sender, args[1]);
@@ -126,12 +133,12 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 		if(self) {
 			MessageUtil.sendMessage(sender, "amountSelf", Map.of(
 					"amount", String.valueOf(token.getAmount()),
-					"tokenType", tokenType.getName()));
+					"tokenType", tokenType.getDisplayName()));
 		} else {
 			MessageUtil.sendMessage(sender, "amountTarget", Map.of(
 					"player", target.getName(),
 					"amount", String.valueOf(token.getAmount()),
-					"tokenType", tokenType.getName()));
+					"tokenType", tokenType.getDisplayName()));
 		}
 	}
 
@@ -141,11 +148,18 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 			return;
 		}
 
-		String tokenTypesList = MessageUtil.addCommasAndAnds(tokenTypeRepository.getTokenTypeNames(), "dark_green");
-		MessageUtil.sendMessage(sender, "listTokenTypes", Map.of("tokenTypesList", tokenTypesList));
+		List<String> tokenTypesList = tokenTypeRepository.getTokenTypes().stream()
+				.map(tokenType -> tokenType.getName() + " (" + tokenType.getDisplayName() + ")").toList();
+
+		if(tokenTypesList.size() == 0) {
+			tokenTypesList = List.of(plugin.cfgm.getLanguage().getString("nothing"));
+		}
+		String tokenTypesListString = MessageUtil.addCommasAndAnds(tokenTypesList, "dark_green");
+
+		MessageUtil.sendMessage(sender, "listTokenTypes", Map.of("tokenTypesList", tokenTypesListString));
 	}
 
-	private void runCreateCommand(CommandSender sender, String name) {
+	private void runCreateCommand(CommandSender sender, String name, String displayName) {
 		if(!sender.hasPermission("TokensSystem.create")) {
 			MessageUtil.sendErrMessage(sender, "accessDenied");
 			return;
@@ -154,19 +168,20 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
+				String nameLowerCase = name.toLowerCase();
 				try {
-					tokenTypeRepository.createTokenType(name);
+					tokenTypeRepository.createTokenType(nameLowerCase, displayName);
 				} catch (SQLException | FailedCratingTokenType e) {
 					MessageUtil.sendErrMessage(sender, "error");
 					return;
 				} catch (TokenTypeAlreadyExists e) {
-					MessageUtil.sendErrMessage(sender, "tokenTypeExists", Map.of("tokenType", name));
+					MessageUtil.sendErrMessage(sender, "tokenTypeExists", Map.of("tokenType", nameLowerCase));
 					return;
 				} catch (IllegalArgumentException ignored) {
 					MessageUtil.sendErrMessage(sender, "tokenTypeIllegalCharacters");
 					return;
 				}
-				MessageUtil.sendMessage(sender, "createdTokenType", Map.of("tokenType", name));
+				MessageUtil.sendMessage(sender, "createdTokenType", Map.of("tokenType", nameLowerCase, "displayName", displayName));
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -192,7 +207,7 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 					MessageUtil.sendErrMessage(sender, "error");
 					return;
 				}
-				MessageUtil.sendMessage(sender, "deletedTokenType", Map.of("tokenType", name));
+				MessageUtil.sendMessage(sender, "deletedTokenType", Map.of("tokenType", tokenType.getDisplayName()));
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -273,14 +288,14 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 				// sending message to target and executor
 				MessageUtil.sendMessage(sender, method+"Tokens",
 						Map.of("player", targetName,
-								"tokenType", tokenTypeName,
+								"tokenType", tokenType.getDisplayName(),
 								"amount", amountText,
 								"sum", String.valueOf(token.getAmount())
 						));
 
 				if(target.isOnline()) {
 					MessageUtil.sendMessage((Player) target, method+"TokensTarget",
-							Map.of("tokenType", tokenTypeName,
+							Map.of("tokenType", tokenType.getDisplayName(),
 									"amount", amountText,
 									"sum", String.valueOf(token.getAmount())
 							));
@@ -292,16 +307,16 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 
 	private void showUsageMessage(CommandSender sender) {
 		sender.sendMessage("§7Syntax: /tokens list");
-		sender.sendMessage("§7Syntax: /tokens create <namn>");
+		sender.sendMessage("§7Syntax: /tokens create <namn> [visningsnamn]");
 		sender.sendMessage("§7Syntax: /tokens delete <namn>");
-		sender.sendMessage("§7Syntax: /tokens amount <tokentyp> <spelare>");
+		sender.sendMessage("§7Syntax: /tokens amount <tokentyp> [spelare]");
 		sender.sendMessage("§7Syntax: /tokens add <tokentyp> <spelare> <summa>");
 		sender.sendMessage("§7Syntax: /tokens remove <tokentyp> <spelare> <summa>");
 		sender.sendMessage("§7Syntax: /tokens set <tokentyp> <spelare> <summa>");
 	}
 
 	private static List<String> tab_complete_s1 = List.of("list", "create", "delete", "amount", "add", "remove", "set");
-	private static List<String> tab_complete_should_show_token_type = List.of("amount", "add", "remove", "set");
+	private static List<String> tab_complete_should_show_token_type = List.of("amount", "add", "remove", "set", "delete");
 	private static List<String> tab_complete_should_show_numbers = List.of("add", "remove", "set");
 	private static List<String> tab_complete_numbers = List.of("10", "100", "1000");
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {

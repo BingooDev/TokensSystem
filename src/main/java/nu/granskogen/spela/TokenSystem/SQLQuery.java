@@ -3,7 +3,8 @@ package nu.granskogen.spela.TokenSystem;
 public enum SQLQuery {
 	CREATE_TABLE_TOKEN_TYPES("CREATE TABLE IF NOT EXISTS token_types (" +
 			"id int(11) PRIMARY KEY auto_increment," +
-			"name varchar(255) NOT NULL UNIQUE" +
+			"name varchar(255) NOT NULL UNIQUE," +
+			"display_name varchar(255) NOT NULL" +
 			");"),
 	CREATE_TABLE_USER_TOKENS("CREATE TABLE IF NOT EXISTS user_token_type (" +
 			"id int(11) PRIMARY KEY auto_increment," +
@@ -12,12 +13,7 @@ public enum SQLQuery {
 			"amount int(11) NOT NULL, " +
 			"FOREIGN KEY (token_type_id) REFERENCES token_types(id)," +
 			"UNIQUE(uuid, token_type_id)" +
-			");"),
-	SELECT_ALL_TOKEN_TYPES("SELECT * FROM token_types;"),
-	SELECT_TOKENS_BY_USER("SELECT * FROM user_tokens WHERE uuid=?;"),
-	UPDATE_TOKEN("INSERT INTO user_tokens (uuid, token_type_id, amount) VALUES (?,?,?) "
-			+ "ON DUPLICATE KEY UPDATE uuid=VALUES(uuid), token_type_id=VALUES(token_type_id), "
-			+ "amount=VALUES(amount);");
+			");");
 	private String mysql;
 	
 	SQLQuery(String mysql) {
