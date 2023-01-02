@@ -8,11 +8,21 @@ api-version: 1.16
 
 commands:
   tokens:
+    description: Main TokensSystem command
 
 permissions:
+  TokensSystem.create:
+    description: Allows access to create new token types
+    default: op
+  TokensSystem.delete:
+    description: Allows access to delete token types
+    default: op
+  TokensSystem.list:
+    description: Allows access to list token types
+    default: op
   TokensSystem.see.self:
     description: Allows to see your token amount
-    default: op
+    default: true
   TokensSystem.see.other:
     description: Allows to see other players token amount
     default: op
@@ -30,3 +40,6 @@ permissions:
       TokensSystem.remove: true
       TokensSystem.see.other: true
       TokensSystem.see.self: true
+      TokensSystem.create: true
+      TokensSystem.delete: true
+      TokensSystem.list: true

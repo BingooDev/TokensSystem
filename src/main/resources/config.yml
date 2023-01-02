@@ -3,8 +3,9 @@ database:
   database: ""
   password: ""
   host: ""
-  port: ""
+  port: 3306
   prepStmtCacheSqlLimit: "2048"
   prepStmtCacheSize: "250"
   connectionTimeout: 500000 
   maximumPoolSize: 4
+  useSSL: false

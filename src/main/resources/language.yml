@@ -1,0 +1,25 @@
+and: "och"
+or: "eller"
+
+messages:
+  tokensLeft: "<green><dark_green>{player}</dark_green> har <dark_green>{amount} {tokenType}s</dark_green> kvar."
+  createdTokenType: "<green>Du skapade token typen <dark_green>{tokenType}</dark_green>."
+  listTokenTypes: "<green>Följande token typer finns: {tokenTypesList}."
+  deletedTokenType: "<green>Token typen <darK_green>{tokenType}</dark_green> har raderats."
+  addTokens: "<green><dark_green>{player}s {tokenType}s</dark_green> ökades med <dark_green>{amount}</dark_green> ny summa: <dark_green>{sum} {tokenType}</dark_green>."
+  addTokensTarget: "<green>Du har fått <dark_green>{amount} {tokenType}s</dark_green>, ny summa: <dark_green>{sum} {tokenType}</dark_green>."
+  removeTokens: "<green><dark_green>{player}s {tokenType}s</dark_green> minskade med <dark_green>{amount}</dark_green> ny summa: <dark_green>{sum} {tokenType}</dark_green>."
+  removeTokensTarget: "<green>Du har blivit av med <dark_green>{amount} {tokenType}s</dark_green>, ny summa: <dark_green>{sum} {tokenType}</dark_green>."
+  setTokens: "<green><dark_green>{player}s {tokenType}s</dark_green> sattes till <dark_green>{amount}</dark_green>."
+  setTokensTarget: "<green>Dina <dark_green>{tokenType}s</dark_green> sattes till <dark_green>{amount}</dark_green>."
+  amountSelf: "<green>Du har <dark_green>{amount} {tokenType}s</dark_green>."
+  amountTarget: "<green><dark_green>{player}</dark_green> har <dark_green>{amount} {tokenType}s</dark_green>."
+
+errors:
+  accessDenied: "<red>Åtkomst nekad!"
+  error: "<red>Ett fel uppstod. Vänligen kontakta administratör."
+  tokenTypeExists: "<red>TokenTypen <dark_red>{tokenType}</dark_red> finns redan."
+  tokenTypeDoesntExist: "<red>TokenTypen <dark_red>{tokenType}</dark_red> finns inte."
+  tokenTypeIllegalCharacters: "<red>Namnet får endast innehålla a-z, 0-9, _ och -"
+  invalidAmount: "<red>Du angav en ogiltig summa. Endast siffror är tillåtna."
+  onlyPlayers: "<red>Du behöver vara en spelare för att använda detta kommando."

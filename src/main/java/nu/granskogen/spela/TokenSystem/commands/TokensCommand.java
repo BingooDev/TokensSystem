@@ -1,204 +1,331 @@
 package nu.granskogen.spela.TokenSystem.commands;
 
-import java.util.Arrays;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import nu.granskogen.spela.TokenSystem.MessageUtil;
+import nu.granskogen.spela.TokenSystem.exceptions.FailedCratingTokenType;
+import nu.granskogen.spela.TokenSystem.exceptions.TokenTypeAlreadyExists;
+import nu.granskogen.spela.TokenSystem.exceptions.TokenTypeDoesntExist;
+import nu.granskogen.spela.TokenSystem.token.Token;
+import nu.granskogen.spela.TokenSystem.token.TokenRepository;
+import nu.granskogen.spela.TokenSystem.tokenType.TokenType;
+import nu.granskogen.spela.TokenSystem.tokenType.TokenTypeRepository;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
-
-import com.google.common.collect.Lists;
 
 import nu.granskogen.spela.TokenSystem.Main;
-import nu.granskogen.spela.TokenSystem.PlayerToken;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class TokensCommand implements CommandExecutor, TabCompleter {
-	Main pl = Main.getInstance();
+
+	private Main plugin;
+	private TokenTypeRepository tokenTypeRepository;
+	private TokenRepository tokenRepository;
+
+	public TokensCommand(Main plugin, TokenTypeRepository tokenTypeRepository, TokenRepository tokenRepository) {
+		this.plugin = plugin;
+		this.tokenTypeRepository = tokenTypeRepository;
+		this.tokenRepository = tokenRepository;
+	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(args.length == 1) {
-			if(!(sender instanceof Player)) {
-				sender.sendMessage("You need to be a player!");
-				return false;
-			}
-			Player player = (Player) sender;
-			
-			if(!sender.hasPermission("TokensSystem.see.self")) {
-				sender.sendMessage("§cÅtkomst nekad!");
-				return false;
-			}
-			
-			PlayerToken tokens;
-			switch (args[0].toLowerCase()) {
-				case "jobs":
-					tokens = pl.getJobsToken(player.getUniqueId());
-					break;
-				case "vote":
-					tokens = pl.getVoteToken(player.getUniqueId());
-					break;
-	
-				default:
-					sender.sendMessage("§cOgiltig token typ.");
-					return false;
-			}
-			
-			sender.sendMessage("§aDu har §2" + tokens.getAmount() + " " + tokens.getName() + "s" + "§a.");
-			return true;
-		}
-		
-		if(args.length == 3) {
-			if(!sender.hasPermission("TokensSystem.see.other")) {
-				sender.sendMessage("§cÅtkomst nekad!");
-				return false;
-			}
-			
-			@SuppressWarnings("deprecation")
-			OfflinePlayer player = Bukkit.getOfflinePlayer(args[2]);
-			
-			if(player == null) {
-				sender.sendMessage("§cSpelaren finns inte.");
-				return false;
-			}
-			
-			if(!args[1].equalsIgnoreCase("amount")) {
-				sendUsageText(sender);
-				return false;
-			}
-			
-			PlayerToken tokens;
-			switch (args[0].toLowerCase()) {
-				case "jobs":
-					tokens = pl.getJobsToken(player.getUniqueId());
-					break;
-				case "vote":
-					tokens = pl.getVoteToken(player.getUniqueId());
-					break;
-	
-				default:
-					sender.sendMessage("§cOgiltig token typ.");
-					return false;
-			}
-			
-			sender.sendMessage("§2" + player.getName() + "§a har §2" + tokens.getAmount() + " " + tokens.getName() + "§a.");
-			return true;
-		}
-		
-		if(args.length < 4) {
-			sendUsageText(sender);
-			return false;
-		}
-		
-		@SuppressWarnings("deprecation")
-		OfflinePlayer player = Bukkit.getOfflinePlayer(args[2]);
-		
-		if(player == null) {
-			sender.sendMessage("§cSpelaren finns inte.");
-			return false;
-		}
-		
-		PlayerToken tokens;
-		switch (args[0].toLowerCase()) {
-			case "jobs":
-				tokens = pl.getJobsToken(player.getUniqueId());
-				break;
-			case "vote":
-				tokens = pl.getVoteToken(player.getUniqueId());
-				break;
+		/*
+		Possible usages:
+		/tokens list
+		/tokens create <name>
+		/tokens delete <name>
+		/tokens amount <tokentype> [player]
+		/tokens add <tokentype> <player> <amount>
+		/tokens remove <tokentype> <player> <amount>
+		/tokens set <tokentype> <player> <amount>
+		 */
 
-			default:
-				sender.sendMessage("§cOgiltig token typ.");
-				return false;
+		if(args.length == 0) {
+			showUsageMessage(sender);
+			return false;
 		}
-		
-		if(args[1].equalsIgnoreCase("add")) {
-			if(!sender.hasPermission("TokensSystem.add")) {
-				sender.sendMessage("§cÅtkomst nekad!");
-				return false;
-			}
-			
-			try {
-				tokens.addAmount(Integer.parseInt(args[3]));
-			} catch (NumberFormatException e) {
-				sender.sendMessage("§cOgiltig summa");
-				return false;
-			}
-			
-			pl.dbm.updateUserTokens(player.getUniqueId());
-			
-			sender.sendMessage("§2" + player.getName() + "§a har fått §2" + args[3] + " " + tokens.getName()+ "s§a. Ny totalsumma: §2" + tokens.getAmount() + " " + tokens.getName() + "s§a.");
-			
-		} else if(args[1].equalsIgnoreCase("remove")) {
-			if(!sender.hasPermission("TokensSystem.remove")) {
-				sender.sendMessage("§cÅtkomst nekad!");
-				return false;
-			}
-			
-			
-			try {
-				int removeAmount = Integer.parseInt(args[3]);
-				if(tokens.getAmount() - removeAmount < 0) {
-					sender.sendMessage("§cKan inte ha ett negativt antal tokens.");
-					return false;
-				}
-				tokens.removeAmount(removeAmount);
-			} catch (NumberFormatException e) {
-				sender.sendMessage("§cOgiltig summa");
-				return false;
-			}
-			
-			pl.dbm.updateUserTokens(player.getUniqueId());
-			
-			sender.sendMessage("§2" + player.getName() + "§a har blivit av med §2" + args[3] + " " + tokens.getName() + "s§a. Ny totalsumma: §2" + tokens.getAmount() + " " + tokens.getName() + "s§a.");
-			
-		} else if(args[1].equalsIgnoreCase("set")) {
-			if(!sender.hasPermission("TokensSystem.remove")) {
-				sender.sendMessage("§cÅtkomst nekad!");
-				return false;
-			}
-			
-			try {
-				tokens.setAmount(Integer.parseInt(args[3]));
-			} catch (NumberFormatException e) {
-				sender.sendMessage("§cOgiltig summa");
-				return false;
-			}
-			
-			pl.dbm.updateUserTokens(player.getUniqueId());
-			
-			sender.sendMessage("§2" + player.getName() + "§a har nu: §2" + tokens.getAmount() + " " + tokens.getName() + "s§a.");
-			
-		} else {
-			sendUsageText(sender);
+
+		if(args[0].toLowerCase().equals("list")) {
+			runListCommand(sender);
+			return true;
 		}
-		
+
+		if(args.length >= 4) {
+			switch (args[0].toLowerCase()) {
+				case "add":
+					runAddCommand(sender, args[1], args[2], args[3]);
+					return true;
+				case "remove":
+					runRemoveCommand(sender, args[1], args[2], args[3]);
+					return true;
+				case "set":
+					runSetCommand(sender, args[1], args[2], args[3]);
+					return true;
+			}
+		}
+
+		if(args.length >= 3 && args[0].equalsIgnoreCase("amount")) {
+			runAmountCommand(sender, args[1], args[2]);
+			return true;
+		}
+
+		if(args.length >= 2) {
+			switch (args[0].toLowerCase()) {
+				case "create":
+					runCreateCommand(sender, args[1]);
+					return true;
+				case "delete":
+					runDeleteCommand(sender, args[1]);
+					return true;
+				case "amount":
+					runAmountCommand(sender, args[1], null);
+					return true;
+			}
+		}
+
+		showUsageMessage(sender);
 		return false;
 	}
-	
-	private void sendUsageText(CommandSender sender) {
-		sender.sendMessage("§7Syntax: /tokens jobs/vote add/remove/set <player> <summa>");
-		sender.sendMessage("§7Syntax: /tokens jobs/vote amount <player>");
-		sender.sendMessage("§7Syntax: /tokens jobs/vote");
+
+	private void runAmountCommand(CommandSender sender, String tokenTypeName, String playerName) {
+		if(!sender.hasPermission("TokensSystem.amount.self")) {
+			MessageUtil.sendErrMessage(sender, "accessDenied");
+			return;
+		}
+
+		TokenType tokenType = tokenTypeRepository.getTokenTypeByName(tokenTypeName);
+		if(tokenType == null) {
+			MessageUtil.sendErrMessage(sender, "tokenTypeDoesntExist", Map.of("tokenType", tokenTypeName));
+			return;
+		}
+
+		OfflinePlayer target;
+		boolean self;
+		// If null, get amount for executor
+		if(playerName == null) {
+			if(!(sender instanceof OfflinePlayer)) {
+				MessageUtil.sendErrMessage(sender, "onlyPlayers");
+				return;
+			}
+			target = (OfflinePlayer) sender;
+			self = true;
+		} else {
+			target = Bukkit.getOfflinePlayer(playerName);
+			self = false;
+		}
+
+		Token token = tokenRepository.getToken(tokenType, target.getUniqueId());
+		if(self) {
+			MessageUtil.sendMessage(sender, "amountSelf", Map.of(
+					"amount", String.valueOf(token.getAmount()),
+					"tokenType", tokenType.getName()));
+		} else {
+			MessageUtil.sendMessage(sender, "amountTarget", Map.of(
+					"player", target.getName(),
+					"amount", String.valueOf(token.getAmount()),
+					"tokenType", tokenType.getName()));
+		}
 	}
-	
+
+	private void runListCommand(CommandSender sender) {
+		if(!sender.hasPermission("TokensSystem.list")) {
+			MessageUtil.sendErrMessage(sender, "accessDenied");
+			return;
+		}
+
+		String tokenTypesList = MessageUtil.addCommasAndAnds(tokenTypeRepository.getTokenTypeNames(), "dark_green");
+		MessageUtil.sendMessage(sender, "listTokenTypes", Map.of("tokenTypesList", tokenTypesList));
+	}
+
+	private void runCreateCommand(CommandSender sender, String name) {
+		if(!sender.hasPermission("TokensSystem.create")) {
+			MessageUtil.sendErrMessage(sender, "accessDenied");
+			return;
+		}
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				try {
+					tokenTypeRepository.createTokenType(name);
+				} catch (SQLException | FailedCratingTokenType e) {
+					MessageUtil.sendErrMessage(sender, "error");
+					return;
+				} catch (TokenTypeAlreadyExists e) {
+					MessageUtil.sendErrMessage(sender, "tokenTypeExists", Map.of("tokenType", name));
+					return;
+				} catch (IllegalArgumentException ignored) {
+					MessageUtil.sendErrMessage(sender, "tokenTypeIllegalCharacters");
+					return;
+				}
+				MessageUtil.sendMessage(sender, "createdTokenType", Map.of("tokenType", name));
+			}
+		}.runTaskAsynchronously(plugin);
+	}
+
+	private void runDeleteCommand(CommandSender sender, String name) {
+		if(!sender.hasPermission("TokensSystem.delete")) {
+			MessageUtil.sendErrMessage(sender, "accessDenied");
+			return;
+		}
+
+		TokenType tokenType = tokenTypeRepository.getTokenTypeByName(name);
+		if(tokenType == null) {
+			MessageUtil.sendErrMessage(sender, "tokenTypeDoesntExist", Map.of("tokenType", name));
+			return;
+		}
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				try {
+					tokenTypeRepository.delete(tokenType);
+				} catch (SQLException e) {
+					MessageUtil.sendErrMessage(sender, "error");
+					return;
+				}
+				MessageUtil.sendMessage(sender, "deletedTokenType", Map.of("tokenType", name));
+			}
+		}.runTaskAsynchronously(plugin);
+	}
+
+	private void runAddCommand(CommandSender sender, String tokenTypeName, String targetName, String amountText) {
+		if(!sender.hasPermission("TokensSystem.add")) {
+			MessageUtil.sendErrMessage(sender, "accessDenied");
+			return;
+		}
+
+		updateTokens(sender, tokenTypeName, targetName, amountText, "add");
+	}
+
+	private void runRemoveCommand(CommandSender sender, String tokenTypeName, String targetName, String amountText) {
+		if(!sender.hasPermission("TokensSystem.remove")) {
+			MessageUtil.sendErrMessage(sender, "accessDenied");
+			return;
+		}
+
+		updateTokens(sender, tokenTypeName, targetName, amountText, "remove");
+	}
+
+	private void runSetCommand(CommandSender sender, String tokenTypeName, String targetName, String amountText) {
+		if(!sender.hasPermission("TokensSystem.set")) {
+			MessageUtil.sendErrMessage(sender, "accessDenied");
+			return;
+		}
+
+		updateTokens(sender, tokenTypeName, targetName, amountText, "set");
+	}
+
+	private void updateTokens(CommandSender sender, String tokenTypeName, String targetName, String amountText, String method) {
+		OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				TokenType tokenType = tokenTypeRepository.getTokenTypeByName(tokenTypeName);
+				if(tokenType == null) {
+					MessageUtil.sendErrMessage(sender, "tokenTypeDoesntExist", Map.of("tokenType", tokenTypeName));
+					return;
+				}
+				Token token = tokenRepository.getToken(tokenType, target.getUniqueId());
+
+				int amount;
+				try {
+					amount = Integer.parseInt(amountText);
+				} catch (NumberFormatException e) {
+					MessageUtil.sendErrMessage(sender, "invalidAmount");
+					return;
+				}
+
+				switch (method) {
+					case "add":
+						token.addAmount(amount);
+						break;
+					case "remove":
+						token.removeAmount(amount);
+						break;
+					case "set":
+						token.setAmount(amount);
+						break;
+					default:
+						throw new IllegalArgumentException("method must be one of: add, remove or set");
+				}
+
+				try {
+					tokenRepository.updateToken(target.getUniqueId(), token);
+				} catch (SQLException e) {
+					MessageUtil.sendErrMessage(sender, "error");
+					return;
+				} catch (TokenTypeDoesntExist e) {
+					MessageUtil.sendErrMessage(sender, "tokenTypeDoesntExist", Map.of("tokenType", tokenTypeName));
+					return;
+				}
+
+				// successfully updated tokens
+				// sending message to target and executor
+				MessageUtil.sendMessage(sender, method+"Tokens",
+						Map.of("player", targetName,
+								"tokenType", tokenTypeName,
+								"amount", amountText,
+								"sum", String.valueOf(token.getAmount())
+						));
+
+				if(target.isOnline()) {
+					MessageUtil.sendMessage((Player) target, method+"TokensTarget",
+							Map.of("tokenType", tokenTypeName,
+									"amount", amountText,
+									"sum", String.valueOf(token.getAmount())
+							));
+				}
+
+			}
+		}.runTaskAsynchronously(plugin);
+	}
+
+	private void showUsageMessage(CommandSender sender) {
+		sender.sendMessage("§7Syntax: /tokens list");
+		sender.sendMessage("§7Syntax: /tokens create <namn>");
+		sender.sendMessage("§7Syntax: /tokens delete <namn>");
+		sender.sendMessage("§7Syntax: /tokens amount <tokentyp> <spelare>");
+		sender.sendMessage("§7Syntax: /tokens add <tokentyp> <spelare> <summa>");
+		sender.sendMessage("§7Syntax: /tokens remove <tokentyp> <spelare> <summa>");
+		sender.sendMessage("§7Syntax: /tokens set <tokentyp> <spelare> <summa>");
+	}
+
+	private static List<String> tab_complete_s1 = List.of("list", "create", "delete", "amount", "add", "remove", "set");
+	private static List<String> tab_complete_should_show_token_type = List.of("amount", "add", "remove", "set");
+	private static List<String> tab_complete_should_show_numbers = List.of("add", "remove", "set");
+	private static List<String> tab_complete_numbers = List.of("10", "100", "1000");
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		List<String> s1 = Arrays.asList(new String[] { "jobs", "vote" });
-		List<String> s2 = Arrays.asList(new String[] { "add", "remove", "set", "amount" });
-		List<String> fList = Lists.newArrayList();
+		List<String> fList = new ArrayList<>();
 		if (args.length == 1) {
-			for (String s : s1) {
+			for (String s : tab_complete_s1) {
 				if (s.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
 					fList.add(s);
 			}
 			return fList;
 		}
-		if (args.length == 2) {
-			for (String s : s2) {
-				if (s.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+		if(args.length == 2 && tab_complete_should_show_token_type.contains(args[0].toLowerCase())) {
+			for (String s : tokenTypeRepository.getTokenTypeNames()) {
+				if (s.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
 					fList.add(s);
+				}
+			}
+			return fList;
+		}
+		if(args.length == 4 && tab_complete_should_show_numbers.contains(args[0].toLowerCase())) {
+			for (String s : tab_complete_numbers) {
+				if (s.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
+					fList.add(s);
+				}
 			}
 			return fList;
 		}

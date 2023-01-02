@@ -1,4 +1,4 @@
-package nu.granskogen.spela.TokenSystem.events;
+package nu.granskogen.spela.TokenSystem.listeners;
 
 import org.black_ixx.bossshop.events.BSRegisterTypesEvent;
 import org.bukkit.event.EventHandler;

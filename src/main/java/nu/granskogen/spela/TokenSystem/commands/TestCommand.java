@@ -1,5 +1,7 @@
-package nu.granskogen.spela.TokenSystem;
+package nu.granskogen.spela.TokenSystem.commands;
 
+import nu.granskogen.spela.TokenSystem.Main;
+import nu.granskogen.spela.TokenSystem.token.VoteToken;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

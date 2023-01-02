@@ -4,20 +4,22 @@ import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
-public class TokensPAPIExpansion extends PlaceholderExpansion {
+public class PAPIExpansion extends PlaceholderExpansion {
 	private Main plugin;
+	private ConfigManager cfgm;
 
     /**
-     * Since we register the expansion inside our own plugin, we
-     * can simply use this method here to get an instance of our
-     * plugin.
-     *
-     * @param plugin
-     *        The instance of our plugin.
-     */
-    public TokensPAPIExpansion(Main plugin){
+	 * Since we register the expansion inside our own plugin, we
+	 * can simply use this method here to get an instance of our
+	 * plugin.
+	 *
+	 * @param plugin The instance of our plugin.
+	 * @param cfgm ConfigManager
+	 */
+    public PAPIExpansion(Main plugin, ConfigManager cfgm) {
         this.plugin = plugin;
-    }
+		this.cfgm = cfgm;
+	}
 
     /**
      * Because this is an internal class,
@@ -102,12 +104,12 @@ public class TokensPAPIExpansion extends PlaceholderExpansion {
 
         // %tokenssystem_votetokens%
         if(identifier.equals("votetokens")){
-            return plugin.getConfig().getString("votetokens", String.valueOf(plugin.getVoteToken(player.getUniqueId()).getAmount()));
+            return cfgm.getConfig().getString("votetokens", String.valueOf(plugin.getVoteToken(player.getUniqueId()).getAmount()));
         }
 
         // %tokenssystem_jobstokens%
         if(identifier.equals("jobstokens")){
-            return plugin.getConfig().getString("jobstokens", String.valueOf(plugin.getJobsToken(player.getUniqueId()).getAmount()));
+            return cfgm.getConfig().getString("jobstokens", String.valueOf(plugin.getJobsToken(player.getUniqueId()).getAmount()));
         }
  
         // We return null if an invalid placeholder (f.e. %tokenssystem_placeholder3%) was provided

@@ -1,4 +1,4 @@
-package nu.granskogen.spela.TokenSystem.events;
+package nu.granskogen.spela.TokenSystem.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

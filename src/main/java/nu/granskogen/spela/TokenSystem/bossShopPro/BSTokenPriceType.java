@@ -1,7 +1,7 @@
 package nu.granskogen.spela.TokenSystem.bossShopPro;
 
 import nu.granskogen.spela.TokenSystem.Main;
-import nu.granskogen.spela.TokenSystem.PlayerToken;
+import nu.granskogen.spela.TokenSystem.token.Token;
 import org.black_ixx.bossshop.core.BSBuy;
 import org.black_ixx.bossshop.core.prices.BSPriceTypeNumber;
 import org.black_ixx.bossshop.managers.ClassManager;
@@ -14,9 +14,9 @@ import java.util.Objects;
 public class BSTokenPriceType extends BSPriceTypeNumber {
 	private Main pl = Main.getInstance();
 	private final String name;
-	private final Class<? extends PlayerToken> tokenType;
+	private final Class<? extends Token> tokenType;
 
-	public BSTokenPriceType(String name, Class<? extends PlayerToken> tokenType) {
+	public BSTokenPriceType(String name, Class<? extends Token> tokenType) {
 		this.name = name;
 		this.tokenType = tokenType;
 		updateNames();
@@ -30,7 +30,7 @@ public class BSTokenPriceType extends BSPriceTypeNumber {
 	@Override
 	public String takePrice(Player p, BSBuy buy, Object price, ClickType clickType, int multiplier) {
 		double points = ClassManager.manager.getMultiplierHandler().calculatePriceWithMultiplier(p, buy, clickType, (Double) price) * multiplier;
-		PlayerToken tokens = pl.getToken(tokenType, p.getUniqueId());
+		Token tokens = pl.getToken(tokenType, p.getUniqueId());
 		tokens.removeAmount((int) points);
 		return getDisplayBalance(p, buy, price, clickType);
 	}
@@ -38,9 +38,9 @@ public class BSTokenPriceType extends BSPriceTypeNumber {
 	@Override
 	public boolean hasPrice(Player p, BSBuy buy, Object price, ClickType clickType, int multiplier, boolean messageOnFailure) {
 		double points = ClassManager.manager.getMultiplierHandler().calculatePriceWithMultiplier(p, buy, clickType, (Double) price) * multiplier;
-		PlayerToken tokens = pl.getToken(tokenType, p.getUniqueId());
+		Token tokens = pl.getToken(tokenType, p.getUniqueId());
 		if (tokens.getAmount() < points) {
-			String message = "§cDu har inte tillräckligt många " + tokens.getName() + "s.";
+			String message = "§cDu har inte tillräckligt många " + tokens.getTokenType().getName() + "s.";
 			if (messageOnFailure) {
 				// Send the message to BossShopPro
 				p.sendMessage(ClassManager.manager.getStringManager().transform(message, buy, buy.getShop(), null, p));
@@ -52,7 +52,7 @@ public class BSTokenPriceType extends BSPriceTypeNumber {
 
 	@Override
 	public String getDisplayBalance(Player p, BSBuy buy, Object price, ClickType clickType) {
-		PlayerToken tokens = pl.getToken(tokenType, p.getUniqueId());
+		Token tokens = pl.getToken(tokenType, p.getUniqueId());
 		return "" + tokens.getAmount();
 	}
 
