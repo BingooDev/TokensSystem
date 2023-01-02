@@ -112,6 +112,30 @@ public class MessageUtil {
 		return MiniMessage.miniMessage().deserialize(message);
 	}
 
+	public static String getRawMessage(String language_key) {
+		return getRawMessage(language_key, Map.of(), "messages");
+	}
+
+	public static String getRawErrMessage(String language_key) {
+		return getRawMessage(language_key, Map.of(), "errors");
+	}
+
+	public static String getRawMessage(String language_key, Map<String, String> replace) {
+		return getRawMessage(language_key, replace, "messages");
+	}
+
+	public static String getRawErrMessage(String language_key, Map<String, String> replace) {
+		return getRawMessage(language_key, replace, "errors");
+	}
+
+	public static String getRawMessage(String language_key, Map<String, String> replace, String lang_key_prefix) {
+		String message = pl.cfgm.getLanguage().getString(lang_key_prefix+"."+language_key);
+		for (Map.Entry<String, String> replaceEntry : replace.entrySet()) {
+			message = message.replace("{"+replaceEntry.getKey()+"}", replaceEntry.getValue());
+		}
+		return message;
+	}
+
 	/**
 	 * Adds "," and "and" between words
 	 * @param words List of words that should be formatted.

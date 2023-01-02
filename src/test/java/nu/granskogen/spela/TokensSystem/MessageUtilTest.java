@@ -93,4 +93,17 @@ public class MessageUtilTest {
 		String actual2 = MessageUtil.addCommasAndAnds(List.of("a"), "dark_green");
 		assertEquals(expected2, actual2);
 	}
+
+	@Test
+	void canGetRawMessage() {
+		String tokenType = "VoteToken";
+
+		String expected1 = "<red>Åtkomst nekad!";
+		String actual1 = MessageUtil.getRawErrMessage("accessDenied");
+		assertEquals(expected1, actual1);
+
+		String expected2 = "<red>TokenTypen <dark_red>"+tokenType+"</dark_red> finns redan.";
+		String actual2 = MessageUtil.getRawErrMessage("tokenTypeExists", Map.of("tokenType", tokenType));
+		assertEquals(expected2, actual2);
+	}
 }
