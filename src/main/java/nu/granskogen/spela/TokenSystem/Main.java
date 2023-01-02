@@ -77,7 +77,8 @@ public class Main extends JavaPlugin {
         }
 
 		if (Bukkit.getPluginManager().getPlugin("Votifier") != null && cfgm.getConfig().getBoolean("enableVoteToken")) {
-			getServer().getPluginManager().registerEvents(new VoteListener(), this);
+			getLogger().info("Enabling Votifier support");
+			getServer().getPluginManager().registerEvents(new VoteListener(tokenTypeRepository.getTokenTypeByName("vote"), tokenRepository, this, getLogger()), this);
         }
 
 		if (Bukkit.getPluginManager().getPlugin("Jobs") != null && cfgm.getConfig().getBoolean("enableJobsToken")) {
