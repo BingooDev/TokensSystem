@@ -2,6 +2,9 @@ package nu.granskogen.spela.TokensSystem;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import com.zaxxer.hikari.HikariDataSource;
+import nu.granskogen.spela.TokenSystem.exceptions.TokenTypeDoesntExist;
+import nu.granskogen.spela.TokenSystem.token.Token;
+import nu.granskogen.spela.TokenSystem.token.TokenRepository;
 import nu.granskogen.spela.TokenSystem.tokenType.TokenType;
 import nu.granskogen.spela.TokenSystem.tokenType.TokenTypeRepository;
 import nu.granskogen.spela.TokenSystem.exceptions.FailedCratingTokenType;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -154,5 +158,22 @@ public class TokenTypeRepositoryTest {
 
 		assertFalse(tokenTypeRepository.exists(id+1));
 		assertFalse(tokenTypeRepository.exists("test2"));
+	}
+
+	@Test
+	void canDeleteTokenTypeIfUsersHaveTokenType() {
+		TokenType tokenType = null;
+		try {
+			int id = tokenTypeRepository.createTokenType("one");
+			tokenType = tokenTypeRepository.getTokenTypeById(id);
+			TokenRepository tokenRepository = new TokenRepository(dataSource, tokenTypeRepository);
+
+			// Add user data associated with token type
+			tokenRepository.updateToken(UUID.randomUUID(), new Token(tokenType, 42));
+		} catch (SQLException | FailedCratingTokenType | TokenTypeAlreadyExists | TokenTypeDoesntExist ignored) {}
+
+
+		TokenType finalTokenType = tokenType;
+		assertDoesNotThrow(() -> tokenTypeRepository.delete(finalTokenType));
 	}
 }

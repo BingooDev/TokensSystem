@@ -11,7 +11,7 @@ public enum SQLQuery {
 			"uuid varchar(255) NOT NULL, " +
 			"token_type_id int(255) NOT NULL, " +
 			"amount int(11) NOT NULL, " +
-			"FOREIGN KEY (token_type_id) REFERENCES token_types(id)," +
+			"FOREIGN KEY (token_type_id) REFERENCES token_types(id) ON DELETE CASCADE," +
 			"UNIQUE(uuid, token_type_id)" +
 			");");
 	private String mysql;
