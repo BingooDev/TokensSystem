@@ -69,10 +69,12 @@ public class Main extends JavaPlugin {
 
 		// Small check to make sure that BossShopPro is installed
 		if (Bukkit.getPluginManager().getPlugin("BossShopPro") != null) {
+			getLogger().info("Enabling BossShopPro support");
 			getServer().getPluginManager().registerEvents(new BSListener(), this);
         }
 
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			getLogger().info("Enabling PlaceholderAPI support");
 			new PAPIExpansion(Main.getInstance(), cfgm, tokenTypeRepository, tokenRepository).register();
         }
 
@@ -82,7 +84,8 @@ public class Main extends JavaPlugin {
         }
 
 		if (Bukkit.getPluginManager().getPlugin("Jobs") != null && cfgm.getConfig().getBoolean("enableJobsToken")) {
-			getServer().getPluginManager().registerEvents(new JobsListener(tokenTypeRepository.getTokenTypeByName("jobs"), tokenRepository, this), this);
+			getLogger().info("Enabling Jobs support");
+			getServer().getPluginManager().registerEvents(new JobsListener(tokenTypeRepository.getTokenTypeByName("jobs"), tokenRepository, this, getLogger()), this);
         }
 
 //		if(!this.loadUsers()) {
