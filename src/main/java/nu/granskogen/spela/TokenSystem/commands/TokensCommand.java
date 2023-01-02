@@ -101,7 +101,10 @@ public class TokensCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private void runAmountCommand(CommandSender sender, String tokenTypeName, String playerName) {
-		if(!sender.hasPermission("TokensSystem.amount.self")) {
+		String permission = "TokensSystem.amount.self";
+		if(playerName != null)
+			permission = "TokensSystem.amount.other";
+		if(!sender.hasPermission(permission)) {
 			MessageUtil.sendErrMessage(sender, "accessDenied");
 			return;
 		}
