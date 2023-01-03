@@ -1,4 +1,6 @@
+# Aktiverar JobsToken belöningar (ger token när någon går upp i level)
 enableJobsToken: true
+# Aktiverar VoteToken belöningar (ger token när någon röstar)
 enableVoteToken: true
 
 database:
