@@ -2,8 +2,8 @@
 TokensSystem is a plugin for adding a new currencies.
 Default TokenTypes: JobsToken and VoteToken
 
-## Databas
-Pluginet använder MySQL/MariaDB för att spara data.
+## Database
+The plugin uses a MySQL/MariaDB for data storage.
 
 ## Jobs
 The plugin supports [JobsReborn](https://www.spigotmc.org/resources/jobs-reborn.4216/) and will automatically give a JobsToken to a player when reaching a new level.
