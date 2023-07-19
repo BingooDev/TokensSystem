@@ -1,26 +1,20 @@
 package nu.granskogen.spela.TokenSystem;
 
-import java.io.File;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.UUID;
-
 import com.zaxxer.hikari.HikariDataSource;
+import nu.granskogen.spela.TokenSystem.commands.TokensCommand;
 import nu.granskogen.spela.TokenSystem.exceptions.FailedCratingTokenType;
 import nu.granskogen.spela.TokenSystem.exceptions.TokenTypeAlreadyExists;
-import nu.granskogen.spela.TokenSystem.token.JobsToken;
-import nu.granskogen.spela.TokenSystem.token.Token;
+import nu.granskogen.spela.TokenSystem.listeners.BSListener;
+import nu.granskogen.spela.TokenSystem.listeners.JobsListener;
+import nu.granskogen.spela.TokenSystem.listeners.VoteListener;
 import nu.granskogen.spela.TokenSystem.token.TokenRepository;
-import nu.granskogen.spela.TokenSystem.token.VoteToken;
 import nu.granskogen.spela.TokenSystem.tokenType.TokenTypeRepository;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import nu.granskogen.spela.TokenSystem.commands.TokensCommand;
-import nu.granskogen.spela.TokenSystem.listeners.BSListener;
-import nu.granskogen.spela.TokenSystem.listeners.JobsListener;
-import nu.granskogen.spela.TokenSystem.listeners.VoteListener;
+import java.io.File;
+import java.sql.SQLException;
 
 public class Main extends JavaPlugin {
 	
@@ -29,13 +23,6 @@ public class Main extends JavaPlugin {
 	public ConfigManager cfgm;
 
 	private static HikariDataSource dataSource;
-	
-	public DataBaseUtility dbm;
-
-	// token_type_id, name
-	private HashMap<Integer, String> tokenTypes = new HashMap<>();
-	// token_type_id, <uuid, token>
-	private HashMap<Integer, HashMap<UUID, Token>> tokens = new HashMap<>();
 
 	private TokenTypeRepository tokenTypeRepository;
 
@@ -87,11 +74,6 @@ public class Main extends JavaPlugin {
 			getLogger().info("Enabling Jobs support");
 			getServer().getPluginManager().registerEvents(new JobsListener(tokenTypeRepository.getTokenTypeByName("jobs"), tokenRepository, this, getLogger()), this);
         }
-
-//		if(!this.loadUsers()) {
-//			//Could not read from database
-//			this.getPluginLoader().disablePlugin(this);
-//		}
 	}
 
 	private void setupDefaultTokenTypes() {
@@ -120,76 +102,8 @@ public class Main extends JavaPlugin {
 		isTest = true;
 	}
 
-	//	public Token getToken(Class<? extends Token> tokenType, UUID uuid) {
-//		System.out.println(tokenType);
-//		if(VoteToken.class.isAssignableFrom(tokenType)) {
-//			return getVoteToken(uuid);
-//		} else if(JobsToken.class.isAssignableFrom(tokenType)) {
-//			return getJobsToken(uuid);
-//		}
-//		return null;
-//	}
-//
-//	public VoteToken getVoteToken(UUID uuid) {
-//		VoteToken voteToken = voteTokens.get(uuid);
-//		if(voteToken == null) {
-//			voteToken = new VoteToken();
-//			voteTokens.put(uuid, voteToken);
-//		}
-//
-//		return voteToken;
-//	}
-//
-//	public JobsToken getJobsToken(UUID uuid) {
-//		JobsToken jobsToken = jobsTokens.get(uuid);
-//		if(jobsToken == null) {
-//			jobsToken = new JobsToken();
-//			jobsTokens.put(uuid, jobsToken);
-//		}
-//
-//		return jobsToken;
-//	}
-//
 	public static Main getInstance() {
 		return instance;
-	}
-//
-//	private boolean loadUsers() {
-//		try (Connection con = DataSource.getConnection();
-//				PreparedStatement pst = con.prepareStatement(SQLQuery.SELECT_ALL_USERS.toString());
-//				ResultSet rs = pst.executeQuery();
-//			) {
-//			while (rs.next()) {
-//				VoteToken vt = new VoteToken();
-//				vt.setAmount(rs.getInt("vote_tokens"));
-//				voteTokens.put(UUID.fromString(rs.getString("uuid")), vt);
-//
-//				JobsToken jt = new JobsToken();
-//				jt.setAmount(rs.getInt("jobs_tokens"));
-//				jobsTokens.put(UUID.fromString(rs.getString("uuid")), jt);
-//			}
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-//		return true;
-//	}
-
-
-	/**
-	 * TEMP
-	 */
-
-	public Token getToken(Class<? extends Token> tokenType, UUID uuid) {
-		return null;
-	}
-
-	public VoteToken getVoteToken(UUID uuid) {
-		return null;
-	}
-
-	public JobsToken getJobsToken(UUID uuid) {
-		return null;
 	}
 
 

@@ -38,7 +38,6 @@ public class VoteListener implements Listener {
 	public void onVote(VotifierEvent event) {
 		OfflinePlayer player = Bukkit.getOfflinePlayer(event.getVote().getUsername());
 		logger.info(voteTokenType.getDisplayName()+" added to " + player.getName() + " ("+player.getUniqueId()+")");
-		Main.getInstance().dbm.updateUserTokens(player.getUniqueId());
 
 		Token voteToken = tokenRepository.getToken(voteTokenType, player.getUniqueId());
 		voteToken.addAmount(1);
